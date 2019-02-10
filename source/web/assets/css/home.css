@@ -1,0 +1,39 @@
+
+body {
+	font-family: sans-serif;
+}
+
+.nav-button-container {
+	width: 500px;
+	margin: 75px 0 0 75px;
+	transform: skew(-30deg);
+}
+
+.nav-button {
+	width: calc(100% - 20px);
+	height: 120px;
+	margin: 10px;
+	background: linear-gradient(90deg, transparent, #033303 70%);
+	border-radius: 6px;
+}
+
+.nav-button:hover {
+	opacity: 0.7;
+}
+
+.nav-button * {
+	color: white;
+	float: right;
+	transform: skew(30deg);
+}
+
+.nav-button span {
+	font-weight: bold;
+	line-height: 120px;
+	vertical-align: middle;
+}
+
+.nav-button img {
+	width: 90px;
+	margin: 15px;
+}
