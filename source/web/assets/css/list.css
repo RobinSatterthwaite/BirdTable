@@ -1,0 +1,140 @@
+
+html {
+	height: 100%;
+}
+
+body {
+	height: 100%;
+	display: flex;
+	margin: 0;
+	overflow: hidden;
+	background-color: #cdb;
+	font-family: sans-serif;
+	font-size: 10pt;
+}
+
+#Filters {
+	margin: 30px;
+	display: table;
+	background-color: white;
+	border: 1px solid #eee;
+	border-radius: 20px;
+}
+
+.filter-container {
+	display: flex;
+	margin: 10px;
+}
+
+.filter-container > * {
+	margin: 0 20px 20px 20px;
+}
+
+.filter-container:first-child > * {
+	margin-top: 20px;
+}
+
+.filter-container > :first-child {
+	width: 120px;
+	text-align: right;
+	line-height: 32px;
+}
+
+.filter-container > :last-child {
+	width: 160px;
+}
+
+.filter-container input[type=text] {
+	margin: 5px;
+}
+
+#FilterButtons {
+	margin: 30px;
+	text-align: center;
+}
+
+#FilterButtons > button {
+	padding: 3px 15px;
+}
+
+#SpeciesList {
+	width: 100%;
+	overflow-y: scroll;
+	padding: 30px;
+}
+
+.species-heading {
+	display: flex;
+	line-height: 45px;
+	font-size: 11pt;
+	font-weight: bold;
+	background-color: white;
+	border: 1px solid #eee;
+	border-bottom: 2px solid #ccc;
+}
+
+.species-heading > * {
+	width: 40%;
+}
+
+.species-heading > :nth-child(2) {
+	width: 200px;
+	text-align: center;
+}
+
+.species-element {
+	display: flex;
+	background-color: white;
+	border: 1px solid #eee;
+	border-top-color: white;
+}
+
+.species-element:hover {
+	cursor: pointer;
+	border-color: #aaa;
+}
+
+.species-element:last-child {
+	margin-bottom: 30px;
+}
+
+.species-element > * {
+	width: 40%;
+}
+
+.species-element > :nth-child(n+2) {
+	line-height: 40px;
+}
+
+.species-name {
+	margin-top: 5px;
+	margin-left: 15px;
+	font-weight: bold;
+}
+
+.species-binomial-name {
+	margin-left: 35px;
+	font-size: 8pt;
+	font-style: italic;
+}
+
+.species-count {
+	text-align: center;
+	width: 200px;
+	display: flex;
+}
+
+.species-count > :first-child {
+	width: 46%;
+	text-align: right;
+}
+
+.species-seen-heard {
+	margin-right: 15px;
+	display: flex;
+	text-align: center;
+}
+
+.species-seen-heard > * {
+	width: 33%;
+}

@@ -6,35 +6,7 @@ import pyodbc as odbc
 import cherrypy
 import pystache
 
-from db.Table import Table as DbTable
-from SpeciesEntry import SpeciesEntry
-
-from client.pages.Home import Home
-
-
-
-class Site(object):
-
-	def __init__(self):
-		self.renderer = pystache.Renderer()
-		self.home = Home()
-
-	@cherrypy.expose
-	def index(self):
-		return self.renderer.render(self.home)
-
-	@cherrypy.expose
-	def list(self):
-		return "List: TBD"
-
-	@cherrypy.expose
-	def visits(self):
-		return "Visits: TBD"
-
-	@cherrypy.expose
-	def sites(self):
-		return "Sites: TBD"
-
+from client.Web import Web
 
 
 def main():
@@ -55,29 +27,12 @@ def main():
 	conn.setdecoding(odbc.SQL_WCHAR, encoding="utf-8")
 	conn.setencoding("utf-8")
 
-	species = DbTable("species", SpeciesEntry, conn)
+	#cursor = conn.cursor()
+	#cursor.execute("call get_list('2017-01-01', '2020-01-01', 0)")
+	#for row in cursor:
+	#	print(row)
 
-	species_ctx = species.newContext()
-
-	#herring_gull = species.new()
-	#herring_gull.commonName = "Herring gull"
-	#herring_gull.binomialName = "Larus argentatus"
-
-	#arctic_tern = species.new()
-	#arctic_tern.commonName = "Arctic tern"
-	#arctic_tern.binomialName = "Sterna paradisaea"
-
-	#species.commit()
-
-	#print herring_gull.primaryKey
-	#print arctic_tern.primaryKey
-
-	herring_gull = (species_ctx
-		.where(("common_name =", "Herring gull"))
-		.fetchAll())
-	print(herring_gull[0].binomialName)
-
-	cherrypy.quickstart(Site(), '/', {
+	cherrypy.quickstart(Web(conn), '/', {
 		'/': {
 			'tools.sessions.on': True,
 			'tools.staticdir.root': os.path.abspath(os.getcwd())

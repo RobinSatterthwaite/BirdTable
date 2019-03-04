@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `species` (
 
 CREATE TABLE IF NOT EXISTS `site` (
   `pk` int(11) NOT NULL AUTO_INCREMENT,
-  `reference_image_fk` int(11) DEFAULT 0,
+  `reference_image_fk` int(11) DEFAULT NULL,
   `name` tinytext DEFAULT NULL,
   `lat_lon` point DEFAULT NULL,
   PRIMARY KEY (`pk`),
@@ -50,9 +50,9 @@ CREATE TABLE IF NOT EXISTS `sighting` (
   `visit_fk` int(11) NOT NULL,
   `count` int(11) DEFAULT NULL,
   `uncertainty` int(11) DEFAULT NULL,
-  `seen` enum('No','Yes') DEFAULT NULL,
-  `heard` enum('No','Yes') DEFAULT NULL,
-  `feral` enum('No','Yes') DEFAULT NULL,
+  `seen` BIT(1) NULL DEFAULT b'0',
+  `heard` BIT(1) NULL DEFAULT b'0',
+  `feral` BIT(1) NULL DEFAULT b'0',
   `notes` text DEFAULT NULL,
   PRIMARY KEY (`pk`),
   KEY `sighting_species` (`species_fk`),
@@ -78,6 +78,37 @@ CREATE TABLE IF NOT EXISTS `site_image` (
   KEY `site_image_site` (`site_fk`),
   CONSTRAINT `site_image_site` FOREIGN KEY (`site_fk`) REFERENCES `site` (`pk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE PROCEDURE get_list(
+  IN time_start DATE,
+  IN time_end DATE,
+  IN site_pk INT,
+  IN include_feral BIT
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+BEGIN
+
+SELECT 
+    common_name,
+    binomial_name,
+    SUM(count) as count,
+    COUNT(sighting.pk) as times_seen,
+    MAX(seen) as seen,
+    MAX(heard) as heard
+  FROM `species`
+  JOIN `sighting` ON sighting.species_fk = species.pk
+  JOIN `visit` ON sighting.visit_fk = visit.pk
+  JOIN `site` ON visit.site_fk = site.pk
+  WHERE ((time_start IS NULL OR start_time >= time_start) AND
+         (time_end IS NULL OR end_time <= time_end)) AND
+        (feral IS NULL OR feral != 1 OR feral = include_feral) AND
+        (site_pk IS NULL OR site.pk = site_pk)
+  GROUP BY species.pk;
+
+END;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

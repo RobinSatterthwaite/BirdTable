@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width:device-width, initial-scale=1">
+
+		<title>List &ndash; BirdTable</title>
+		<link rel="icon" type="image/png" href="/assets/images/icon.png">
+
+		<script type="text/javascript" src="/assets/third-party/moment/moment.min.js"></script>
+
+		<script type="text/javascript" src="/assets/third-party/pikaday/pikaday.min.js"></script>
+		<link rel="stylesheet" href="/assets/third-party/pikaday/pikaday.css">
+
+		<script type="text/javascript" src="/assets/js/ListMain.js"></script>
+		<link rel="stylesheet" href="/assets/css/list.css">
+
+		<script type="text/javascript">
+			if (document.readyState !== "loading") main();
+			else document.addEventListener("DOMContentLoaded", main);
+		</script>
+	</head>
+
+	<body>
+		<div id="Filters">
+			<div class="filter-container">
+				<div style="display:flex">
+					<div style="width:100%; text-align:center; line-height:64px">Date</div>
+					<div style="width:5em">
+						<label for="DateFrom">From</label>
+						<label for="DateTo">To</label>
+					</div>
+				</div>
+				<div>
+					<input id="DateFrom" type="text">
+					<input id="DateTo" type="text">
+				</div>
+			</div>
+			<div class="filter-container">
+					<!--
+				<label for="SiteCountry">Country</label>
+				<div>
+					<input type="text" name="SiteCountry" list="CountryList">
+					<datalist id="CountryList">
+						{{{countryListOptions}}}
+					</datalist>
+				</div>
+					-->
+			</div>
+			<div class="filter-container">
+					<!--
+				<label for="SiteCounty">County</label>
+				<div>
+					<input type="text" name="SiteCounty" list="CountyList">
+					<datalist id="CountyList">
+						{{{countyListOptions}}}
+					</datalist>
+				</div>
+					-->
+			</div>
+			<div class="filter-container">
+				<label for="SiteName">Site</label>
+				<div>
+					<input type="text" name="SiteName" list="SiteList">
+					<datalist id="SiteList">
+						{{{siteListOptions}}}
+					</datalist>
+				</div>
+			</div>
+			<div class="filter-container">
+				<!-- seen/heard -->
+			</div>
+			<div class="filter-container">
+				<label for="IncludeFeral">Include Feral</label>
+				<input id="IncludeFeral" type="checkbox" name="IncludeFeral">
+			</div>
+			<div id="FilterButtons">
+				<button type=button id="ApplyFilters">Apply</button>
+				<button type=button id="ClearFilters">Clear</button>
+			</div>
+		</div>
+		<div id="SpeciesList">
+			<div class="species-heading">
+				<div>
+					<span style="padding-left:40px">{{speciesCount}} species</span>
+				</div>
+				<div>
+					Total seen / times seen
+				</div>
+				<div class="species-seen-heard">
+					<div></div>
+					<div>Seen</div>
+					<div>Heard</div>
+				</div>
+			</div>
+			{{{speciesList}}}
+		</div>
+	</body>
+</html>

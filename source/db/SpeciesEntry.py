@@ -1,6 +1,6 @@
 
-from db.Entry import Entry as DbEntry
-from db.Property import Property as DbProperty
+from .Entry import Entry as DbEntry
+from .Property import Property as DbProperty
 
 
 class SpeciesEntry(DbEntry):

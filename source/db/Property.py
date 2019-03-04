@@ -21,7 +21,7 @@ class Property(object):
 		return self.value != self._oldValue
 
 
-	def finalise_commit(self) -> None:
+	def finaliseCommit(self) -> None:
 		self._oldValue = self.value
 
 
