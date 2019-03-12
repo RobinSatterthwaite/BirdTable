@@ -8,41 +8,37 @@ from .DataListOption import DataListOption
 
 class List(object):
 	
-	def __init__(self, renderer, db_conn, query_args):
+	def __init__(self, renderer, db_conn):
 		self.renderer = renderer
-		self.sites = DbTable("site", SiteEntry, db_conn)
-
-		self.dbConn = db_conn
-		self.speciesSelection = self.getList(query_args)
 		
+		self.sites = DbTable("site", SiteEntry, db_conn)
 		self.allSites = self.sites.newContext().fetchAll()
 
 
-	def getList(self, query_args):
-		species_selection = []
-		cursor = self.dbConn.cursor()
+	@property
+	def speciesSelection(self):
+		return self.species_selection
 
-		include_feral = query_args.get("includeFeral")
-		if include_feral:
-			include_feral = int(include_feral)
-		query_params = (
-			query_args.get("startDate"),
-			query_args.get("endDate"),
-			None,
-			include_feral)
-		
-		cursor.execute("call get_list(?, ?, ?, ?)", query_params)
-		for row in cursor:
-			species_selection.append(row)
-		cursor.close()
+	@speciesSelection.setter
+	def speciesSelection(self, species_selection):
+		self.species_selection = species_selection
 
-		return species_selection
+		self.maxTimesSeen = max(self.species_selection,
+		                        key=lambda s:s['times_seen'])['times_seen']
 
-
+	
 	def speciesList(self):
 		species_list = []
+
 		for species in self.speciesSelection:
-			el = SpeciesElement(species.common_name, species.binomial_name, species.count, species.times_seen, species.seen, species.heard)
+			el = SpeciesElement(
+				species['common_name'],
+				species['binomial_name'],
+				species['count'],
+				species['times_seen'],
+				(self.maxTimesSeen > 1),
+				species['seen'],
+				species['heard'])
 			species_list.append(self.renderer.render(el))
 
 		return "".join(species_list)

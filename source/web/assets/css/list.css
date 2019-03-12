@@ -77,6 +77,10 @@ body {
 	width: 40%;
 }
 
+#SpeciesCount {
+	padding-left:40px;
+}
+
 .species-heading > :nth-child(2) {
 	width: 200px;
 	text-align: center;
@@ -118,13 +122,13 @@ body {
 	font-style: italic;
 }
 
-.species-count {
+.species-element .count {
 	text-align: center;
 	width: 200px;
 	display: flex;
 }
 
-.species-count > :first-child {
+.species-element .count > :first-child {
 	width: 46%;
 	text-align: right;
 }

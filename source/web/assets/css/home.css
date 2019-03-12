@@ -9,6 +9,14 @@ body {
 	transform: skew(-30deg);
 }
 
+a {
+	outline: 0;
+}
+
+a:active .nav-button, a:focus .nav-button {
+	outline: 1px dotted gray;
+}
+
 .nav-button {
 	width: calc(100% - 20px);
 	height: 120px;

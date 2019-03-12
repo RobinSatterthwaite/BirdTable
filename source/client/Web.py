@@ -1,6 +1,9 @@
 
+import json
 import cherrypy
 import pystache
+
+from .SpeciesList import SpeciesList
 
 from client.pages.Home import Home
 from client.pages.List import List
@@ -12,6 +15,8 @@ class Web(object):
 		self.renderer = pystache.Renderer()
 		self.dbConn = db_conn
 		self.homePage = Home()
+		self.listPage = List(self.renderer, self.dbConn)
+		self.speciesList = SpeciesList(db_conn)
 
 	@cherrypy.expose
 	def index(self):
@@ -19,16 +24,19 @@ class Web(object):
 
 	@cherrypy.expose
 	def list(self, **kwargs):
-		self.listPage = List(self.renderer, self.dbConn, kwargs)
+		self.speciesList.getList(kwargs)
+		self.listPage.speciesSelection = self.speciesList.list
 		return self.renderer.render(self.listPage)
 
 	@cherrypy.expose
 	def getList(self, **kwargs):
-		return self.listPage.getList(kwargs)
+		self.speciesList.getList(kwargs)
+		self.listPage.speciesSelection = self.speciesList.list
+		return self.listPage.speciesList()
 
 	@cherrypy.expose
-	def visits(self):
-		return "Visits: TBD"
+	def records(self):
+		return "Records: TBD"
 
 	@cherrypy.expose
 	def sites(self):

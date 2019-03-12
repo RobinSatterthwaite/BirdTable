@@ -13,11 +13,13 @@
 
 CREATE TABLE IF NOT EXISTS `species` (
   `pk` int(11) NOT NULL AUTO_INCREMENT,
+  `taxonomic_first` BIT(1) NULL DEFAULT NULL,
   `taxonomic_next` INT(11) DEFAULT NULL,
   `reference_image_fk` int(11) DEFAULT NULL,
   `common_name` tinytext NOT NULL,
   `binomial_name` tinytext NOT NULL,
   PRIMARY KEY (`pk`),
+  UNIQUE INDEX `species_taxonomic_first` (`taxonomic_first`),
   UNIQUE INDEX `species_taxonomic_next` (`taxonomic_next`),
   KEY `species_reference_image` (`reference_image_fk`),
   CONSTRAINT `taxonomic_next` FOREIGN KEY (`taxonomic_next`) REFERENCES `species` (`pk`),
@@ -80,8 +82,8 @@ CREATE TABLE IF NOT EXISTS `site_image` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE PROCEDURE get_list(
-  IN time_start DATE,
-  IN time_end DATE,
+  IN start_date DATETIME,
+  IN end_date DATETIME,
   IN site_pk INT,
   IN include_feral BIT
 )
@@ -91,22 +93,43 @@ CONTAINS SQL
 SQL SECURITY DEFINER
 BEGIN
 
-SELECT 
+SELECT
+    species.pk as pk, 
     common_name,
     binomial_name,
-    SUM(count) as count,
-    COUNT(sighting.pk) as times_seen,
-    MAX(seen) as seen,
-    MAX(heard) as heard
+    CAST(SUM(count) AS INT) AS count,
+    COUNT(sighting.pk) AS times_seen,
+    MAX(seen) AS seen,
+    MAX(heard) AS heard
   FROM `species`
   JOIN `sighting` ON sighting.species_fk = species.pk
   JOIN `visit` ON sighting.visit_fk = visit.pk
   JOIN `site` ON visit.site_fk = site.pk
-  WHERE ((time_start IS NULL OR start_time >= time_start) AND
-         (time_end IS NULL OR end_time <= time_end)) AND
+  WHERE ((start_date IS NULL OR start_time >= start_date) AND
+         (end_date IS NULL OR end_time <= end_date)) AND
         (feral IS NULL OR feral != 1 OR feral = include_feral) AND
         (site_pk IS NULL OR site.pk = site_pk)
   GROUP BY species.pk;
+
+END;
+
+CREATE PROCEDURE get_taxonomic_order()
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+BEGIN
+
+WITH RECURSIVE taxonomic_order (pk, taxonomic_next, common_name) AS (
+  SELECT pk, taxonomic_next, common_name
+    FROM species
+    WHERE taxonomic_first = 1
+  UNION ALL
+  SELECT s.pk, s.taxonomic_next, s.common_name
+    FROM species s
+    JOIN taxonomic_order ON taxonomic_order.taxonomic_next = s.pk
+)
+SELECT pk FROM taxonomic_order;
 
 END;
 

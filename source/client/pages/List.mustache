@@ -82,10 +82,10 @@
 		<div id="SpeciesList">
 			<div class="species-heading">
 				<div>
-					<span style="padding-left:40px">{{speciesCount}} species</span>
+					<span id="SpeciesCount">{{speciesCount}}</span> species
 				</div>
 				<div>
-					Total seen / times seen
+					Count&nbsp;/&nbsp;times seen
 				</div>
 				<div class="species-seen-heard">
 					<div></div>
@@ -93,7 +93,9 @@
 					<div>Heard</div>
 				</div>
 			</div>
-			{{{speciesList}}}
+			<div id="SpeciesListContent">
+				{{{speciesList}}}
+			</div>
 		</div>
 	</body>
 </html>

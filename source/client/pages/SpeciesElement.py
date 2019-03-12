@@ -6,11 +6,21 @@ class SpeciesElement(TemplateSpec):
 
 	template_name = "SpeciesElement"
 
-	def __init__(self, name, binomial_name, count, times_seen, seen, heard):
+	def __init__(self,
+		           name,
+		           binomial_name,
+		           count,
+		           times_seen,
+		           include_times_seen,
+		           seen,
+		           heard):
 		self.name = name
 		self.binomialName = binomial_name
 		self.count = count
-		self.timesSeen = times_seen
+		if include_times_seen:
+			self.timesSeen = "&nbsp;/&nbsp;{0}".format(times_seen)
+		else:
+			self.timesSeen = ""
 		
 		if seen:
 			self.seen = "\u26ab"
