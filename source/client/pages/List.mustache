@@ -9,10 +9,12 @@
 
 		<script type="text/javascript" src="/assets/third-party/moment/moment.min.js"></script>
 
-		<script type="text/javascript" src="/assets/third-party/pikaday/pikaday.min.js"></script>
-		<link rel="stylesheet" href="/assets/third-party/pikaday/pikaday.css">
+		<script type="text/javascript" src="/assets/third-party/flatpickr/flatpickr.min.js"></script>
+		<link rel="stylesheet" href="/assets/third-party/flatpickr/flatpickr.min.css">
+		<link rel="stylesheet" href="/assets/third-party/flatpickr/themes/material_green.css">
 
 		<script type="text/javascript" src="/assets/js/ListMain.js"></script>
+		<link rel="stylesheet" href="/assets/css/common.css">
 		<link rel="stylesheet" href="/assets/css/list.css">
 
 		<script type="text/javascript">
@@ -61,7 +63,7 @@
 			<div class="filter-container">
 				<label for="SiteName">Site</label>
 				<div>
-					<input type="text" name="SiteName" list="SiteList">
+					<input type="text" id="SiteName" list="SiteList">
 					<datalist id="SiteList">
 						{{{siteListOptions}}}
 					</datalist>

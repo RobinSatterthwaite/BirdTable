@@ -1,5 +1,6 @@
 
 from datetime import datetime, timezone, timedelta
+import pyodbc as odbc
 
 from db.Table import Table as DbTable
 from db.SpeciesEntry import SpeciesEntry
@@ -22,12 +23,35 @@ class SpeciesList(object):
 
 		cursor.close()
 
-		self.list = []
+
+	def getAllSpecies(self):
+		l = []
+
+		try:
+			cursor = self.dbConn.cursor()
+			cursor.execute("select * from species")
+		except odbc.OperationalError as e:
+			sql_state = e.args[0]
+			if sql_state == "08003" or sql_state == "08007" or sql_state == "08S01":
+				self.dbConn.connect()
+				cursor = self.dbConn.cursor()
+			cursor.execute("select * from species")
+
+		field_names = [field[0] for field in cursor.description]
+
+		for row in cursor:
+			d = dict(zip(field_names, row))
+			d['order'] = self.taxonomicOrder[row.pk]
+			l.append(d)
+		l.sort(key=lambda d:d['order'])
+		
+		cursor.close()
+
+		return l
 
 
 	def getList(self, query_args):
-		self.list = []
-		cursor = self.dbConn.cursor()
+		l = []
 
 		start_date_time = None
 		start_date_arg = query_args.get("startDate")
@@ -49,16 +73,27 @@ class SpeciesList(object):
 		query_params = (
 			start_date_time,
 			end_date_time,
-			None,
+			query_args.get("siteId"),
 			include_feral)
-		
-		cursor.execute("call get_list(?, ?, ?, ?)", query_params)
+
+		try:
+			cursor = self.dbConn.cursor()
+			cursor.execute("call get_list(?, ?, ?, ?)", query_params)
+		except odbc.OperationalError as e:
+			sql_state = e.args[0]
+			if sql_state == "08003" or sql_state == "08007" or sql_state == "08S01":
+				self.dbConn.connect()
+				cursor = self.dbConn.cursor()
+				cursor.execute("call get_list(?, ?, ?, ?)", query_params)
+
 		field_names = [field[0] for field in cursor.description]
 
 		for row in cursor:
 			d = dict(zip(field_names, row))
 			d['order'] = self.taxonomicOrder[row.pk]
-			self.list.append(d)
-		self.list.sort(key=lambda d:d['order'])
+			l.append(d)
+		l.sort(key=lambda d:d['order'])
 		
 		cursor.close()
+
+		return l

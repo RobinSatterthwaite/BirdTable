@@ -1,0 +1,25 @@
+<div class="species-entry inactive" data-species-id={{speciesId}}>
+	<div style="width: 180px; padding-left: 20px">{{speciesName}}</div>
+	<div style="width: 300px; text-align: center">
+		<label for="{{idPrefix}}Count">Count</label>
+		<input id="{{idPrefix}}Count" class="count" type="number" min=0>
+		<label for="{{idPrefix}}Uncertainty" class="hidden-if-inactive">&pm;</label>
+		<input id="{{idPrefix}}Uncertainty" class="uncertainty hidden-if-inactive" type="number" min=0>
+	</div>
+	<div class="hidden-if-inactive" style="width: 8%; text-align: center">
+		<label for="{{idPrefix}}Seen">Seen</label>
+		<input id="{{idPrefix}}Seen" class="seen" type="checkbox">
+	</div>
+	<div class="hidden-if-inactive" style="width: 8%; text-align: center">
+		<label for="{{idPrefix}}Heard">Heard</label>
+		<input id="{{idPrefix}}Heard" class="heard" type="checkbox">
+	</div>
+	<div class="hidden-if-inactive" style="padding-left: 40px;">
+		<label for="{{idPrefix}}Notes">Notes</label>
+		<input id="{{idPrefix}}Notes" class="notes" type="text" style="width: 300px">
+	</div>
+	<div class="hidden-if-inactive" style="width: 10%; text-align: center">
+		<label for="{{idPrefix}}Feral">Feral</label>
+		<input id="{{idPrefix}}Feral" class="feral" type="checkbox">
+	</div>
+</div>

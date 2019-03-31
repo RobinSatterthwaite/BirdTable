@@ -1,32 +1,47 @@
 
-var queryParams = new URLSearchParams(window.location.search);
+let queryParams = new URLSearchParams(window.location.search);
 
 
 function main()
 {
-	var date_from_input = document.getElementById("DateFrom");
-	var date_to_input = document.getElementById("DateTo");
-	var include_feral_input = document.getElementById("IncludeFeral");
+	let date_from_input = document.getElementById("DateFrom");
+	let date_to_input = document.getElementById("DateTo");
+	let site_input = document.getElementById("SiteName");
+	let include_feral_input = document.getElementById("IncludeFeral");
 
-	var date_from = new Pikaday({
-		field: date_from_input,
-		format: "YYYY-MM-DD (ddd)"
-	});
-	var date_to = new Pikaday({
-		field: date_to_input,
-		format: "YYYY-MM-DD (ddd)"
-	});
+	let date_from = flatpickr(
+		date_from_input,
+		{
+			dateFormat: "Y-m-d (D)"
+		});
+	let date_to = flatpickr(
+		date_to_input,
+		{
+			dateFormat: "Y-m-d (D)"
+		});
 
-	var initial_from_date = queryParams.get("startDate");
-	if (initial_from_date !== undefined)
+	let initial_from_date = queryParams.get("startDate");
+	if (initial_from_date !== undefined && initial_from_date !== null)
 	{
 		date_from.setDate(moment(initial_from_date).toDate());
 	}
 
-	var initial_to_date = queryParams.get("endDate");
-	if (initial_to_date !== undefined)
+	let initial_to_date = queryParams.get("endDate");
+	if (initial_to_date !== undefined && initial_to_date !== null)
 	{
 		date_to.setDate(moment(initial_to_date).toDate());
+	}
+
+	let initial_site = queryParams.get("siteId");
+	if (initial_site !== undefined && initial_site !== null)
+	{
+		site_input.dataset.value = initial_site;
+		let selected_option = document.querySelector("#SiteList option[value='"+initial_site+"']")
+		if (selected_option !== null)
+		{
+			let label = selected_option.label;
+			site_input.value = label;
+		}
 	}
 
 	if (queryParams.get("includeFeral"))
@@ -34,11 +49,23 @@ function main()
 		include_feral_input.checked = true;
 	}
 
+	site_input.addEventListener("input", (e) =>
+	{
+		let value = e.target.value;
+		e.target.dataset.value = value;
+		let selected_option = document.querySelector("#SiteList option[value='"+value+"']")
+		if (selected_option !== null)
+		{
+			let label = selected_option.label;
+			e.target.value = label;
+		}
+	});
+
 	document.getElementById("ApplyFilters").addEventListener("click", (e) =>
 	{
 		if (date_from_input.value !== "")
 		{
-			queryParams.set("startDate", date_from.getMoment().format("YYYY-MM-DD"));
+			queryParams.set("startDate", moment(date_from.selectedDates[0]).format("YYYY-MM-DD"));
 		}
 		else
 		{
@@ -47,11 +74,20 @@ function main()
 
 		if (date_to_input.value !== "")
 		{
-			queryParams.set("endDate", date_to.getMoment().format("YYYY-MM-DD"));
+			queryParams.set("endDate", moment(date_to.selectedDates[0]).format("YYYY-MM-DD"));
 		}
 		else
 		{
 			queryParams.delete("endDate");
+		}
+
+		if (site_input.dataset.value !== "")
+		{
+			queryParams.set("siteId", site_input.dataset.value);
+		}
+		else
+		{
+			queryParams.delete("siteId");
 		}
 
 		if (include_feral_input.checked)
@@ -69,9 +105,10 @@ function main()
 
 	document.getElementById("ClearFilters").addEventListener("click", (e) =>
 	{
-		date_from_input.value = "";
-		date_to_input.value = "";
-		include_feral_input.checked = false;
+		date_from.clear();
+		date_to.clear();
+		site_input.value = null;
+		include_feral_input.checked = null;
 
 		queryParams = new URLSearchParams();
 		updateList();
@@ -82,10 +119,10 @@ function main()
 
 function updateQueryParams()
 {
-	var new_url =
+	let new_url =
 		window.location.protocol+"//"+window.location.host+window.location.pathname;
 
-	var query_url = queryParams.toString();
+	let query_url = queryParams.toString();
 	if (query_url.length > 0) new_url += "?" + query_url;
 
 	if (new_url !== window.location.href)
@@ -97,22 +134,22 @@ function updateQueryParams()
 
 function updateList()
 {
-	var req_url =
+	let req_url =
 		window.location.protocol+"//"+window.location.host+"/getList";
-	var query_url = queryParams.toString();
+	let query_url = queryParams.toString();
 	if (query_url.length > 0) req_url += "?" + query_url; 
 
-	var req = new XMLHttpRequest();
+	let req = new XMLHttpRequest();
 	req.addEventListener("load", () =>
 	{
 		if (req.status === 200)
 		{
-			var species_list_content = document.getElementById("SpeciesListContent");
+			let species_list_content = document.getElementById("SpeciesListContent");
 			species_list_content.innerHTML = req.responseText;
 			document.getElementById("SpeciesCount").textContent = species_list_content.childElementCount.toString()
 		}
 	});
 	req.open("GET", req_url);
-	req.setRequestHeader("Cache-Control", "no-cache")
+	req.setRequestHeader("Cache-Control", "no-cache");
 	req.send();
 }

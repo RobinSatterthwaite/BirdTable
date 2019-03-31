@@ -1,0 +1,40 @@
+
+body {
+	font-size: 10pt;
+}
+
+.species-entry {
+	display:flex;
+	line-height:24px;
+	margin: 0 2px;
+	border-top: 1px solid #ccc;
+}
+
+.species-entry:last-child {
+	border-bottom: 1px solid #ccc;
+}
+
+.species-entry:focus-within,
+.species-entry:focus-within + .species-entry {
+	border-top-color: black;
+}
+
+.species-entry:last-child:focus-within {
+	border-bottom-color: black;
+}
+
+input.count {
+	width: 60px;
+}
+
+input.uncertainty {
+	width: 52px;
+}
+
+.inactive {
+	color: #aaa;
+}
+
+.inactive .hidden-if-inactive {
+	visibility: hidden;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width:device-width, initial-scale=1">
+
+		<title>Records &ndash; BirdTable</title>
+		<link rel="icon" type="image/png" href="/assets/images/icon.png">
+
+		<script type="text/javascript" src="/assets/third-party/moment/moment.min.js"></script>
+
+		<script type="text/javascript" src="/assets/third-party/flatpickr/flatpickr.min.js"></script>
+		<link rel="stylesheet" href="/assets/third-party/flatpickr/flatpickr.min.css">
+		<link rel="stylesheet" href="/assets/third-party/flatpickr/themes/material_green.css">
+
+		<script type="text/javascript" src="/assets/js/RecordsMain.js"></script>
+		<script type="text/javascript" src="/assets/js/NewVisitDialog.js"></script>
+		<link rel="stylesheet" href="/assets/css/common.css">
+		<link rel="stylesheet" href="/assets/css/records.css">
+		<link rel="stylesheet" href="/assets/css/dialog.css">
+
+		<script type="text/javascript">
+			if (document.readyState !== "loading") main();
+			else document.addEventListener("DOMContentLoaded", main);
+		</script>
+	</head>
+
+	<body>
+		<button type=button id="NewVisit">New</button>
+		<div id="RecordsTable">
+			
+		</div>
+
+		{{{newVisitDialog}}}
+	</body>
+</html>

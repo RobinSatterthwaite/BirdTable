@@ -1,47 +1,39 @@
 
-from db.Table import Table as DbTable
-from db.SiteEntry import SiteEntry
-
 from .SpeciesElement import SpeciesElement
 from .DataListOption import DataListOption
 
 
 class List(object):
 	
-	def __init__(self, renderer, db_conn):
+	def __init__(self, renderer, species_selection, sites):
 		self.renderer = renderer
 		
-		self.sites = DbTable("site", SiteEntry, db_conn)
-		self.allSites = self.sites.newContext().fetchAll()
-
-
-	@property
-	def speciesSelection(self):
-		return self.species_selection
-
-	@speciesSelection.setter
-	def speciesSelection(self, species_selection):
-		self.species_selection = species_selection
-
-		self.maxTimesSeen = max(self.species_selection,
-		                        key=lambda s:s['times_seen'])['times_seen']
+		self.speciesSelection = species_selection
+		self.sites = sites
 
 	
-	def speciesList(self):
+	def SpeciesList(species_selection, renderer):
 		species_list = []
 
-		for species in self.speciesSelection:
+		max_times_seen = max(species_selection,
+		                     key=lambda s:s['times_seen'])['times_seen']
+
+		for species in species_selection:
 			el = SpeciesElement(
 				species['common_name'],
 				species['binomial_name'],
 				species['count'],
 				species['times_seen'],
-				(self.maxTimesSeen > 1),
+				(max_times_seen > 1),
 				species['seen'],
 				species['heard'])
-			species_list.append(self.renderer.render(el))
+			species_list.append(renderer.render(el))
 
 		return "".join(species_list)
+
+
+	def speciesList(self):
+		return List.SpeciesList(self.speciesSelection, self.renderer)
 
 
 	def speciesCount(self):
@@ -50,23 +42,24 @@ class List(object):
 
 	def siteListOptions(self):
 		site_list = []
-		for site in self.allSites:
-			site_list.append(self.renderer.render(DataListOption(site.name)))
+		for site in self.sites:
+			site_option = DataListOption(site.primaryKey, site.name)
+			site_list.append(self.renderer.render(site_option))
 
 		return "".join(site_list)
 
 
-	def countyListOptions(self):
-		county_list = []
-		for county in ["Berkshire", "Gloucestershire", "Hampshire"]:
-			county_list.append(self.renderer.render(DataListOption(county)))
-
-		return "".join(county_list)
-
-
-	def countryListOptions(self):
-		country_list = []
-		for country in ["England", "Scotland", "Wales"]:
-			country_list.append(self.renderer.render(DataListOption(country)))
-
-		return "".join(country_list)
+	# def countyListOptions(self):
+	# 	county_list = []
+	# 	for county in ["Berkshire", "Gloucestershire", "Hampshire"]:
+	# 		county_list.append(self.renderer.render(DataListOption(county)))
+	# 		
+	# 	return "".join(county_list)
+	# 	
+	# 	
+	# def countryListOptions(self):
+	# 	country_list = []
+	# 	for country in ["England", "Scotland", "Wales"]:
+	# 		country_list.append(self.renderer.render(DataListOption(country)))
+	# 		
+	# 	return "".join(country_list)

@@ -1,0 +1,26 @@
+<div id="NewVisitDialog" class="dialog">
+	<div style="height: calc(100% - 41px); overflow-y: scroll;">
+		<div style="display: flex; padding: 16px 16px 16px 32px; border-bottom: 1px solid #888;">
+			<div style="width: 20%;">
+				<label for="SiteName">Site</label>
+				<input type="text" id="SiteName" list="SiteList">
+				<datalist id="SiteList">
+					{{{siteListOptions}}}
+				</datalist>
+			</div>
+			<div style="width: 20%;">
+				<label for="StartDateTime">Start</label>
+				<input id="StartDateTime" type="text">
+			</div>
+			<div style="width: 20%;">
+				<label for="EndDateTime">End</label>
+				<input id="EndDateTime" type="text">
+			</div>
+		</div>
+		{{{speciesEntries}}}
+	</div>
+	<div style="text-align: center; line-height: 40px; border-top: 1px solid #aaa;">
+		<button type=button id="AddNewVisit" style="padding: 2px 10px">OK</button>
+		<button type=button id="CancelNewVisit" style="padding: 2px 10px">Cancel</button>
+	</div>
+</div>
