@@ -2,7 +2,6 @@
 from datetime import datetime, timezone, timedelta
 import pyodbc as odbc
 
-from db.Table import Table as DbTable
 from db.SpeciesEntry import SpeciesEntry
 
 

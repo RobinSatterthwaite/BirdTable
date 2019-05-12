@@ -1,5 +1,33 @@
 
 body {
 	font-family: sans-serif;
+	background-color: #cdb;
 }
 
+.hidden {
+	visibility: hidden;
+}
+
+.slide-in {
+	animation: slidein 0.5s forwards;
+}
+
+@keyframes slidein {
+	100% {
+		transform: translate(0, 0);
+	}
+}
+
+.slide-out-up-start {
+	transform: translate(0, -100%);
+}
+
+.slide-out-up {
+	animation: slideoutup 0.5s forwards;
+}
+
+@keyframes slideoutup {
+	100% {
+		transform: translate(0, -100%);
+	}
+}

@@ -1,7 +1,7 @@
 {
 	"Database": {
 		"Name":     "birds",
-		"Driver":   "MariaDB ODBC 3.0 Driver",
+		"Driver":   "MariaDB ODBC 3.1 Driver",
 		"Server":   "localhost",
 		"Port":     "3306",
 		"Username": "root",

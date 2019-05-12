@@ -5,6 +5,30 @@ class NewVisitDialog
 	{
 		this.element = element;
 
+		this.startDateTime = flatpickr(
+			document.getElementById("StartDateTime"),	{
+				enableTime: true,
+				dateFormat: "Y-m-d  H:i"
+			});
+		this.endDateTime = flatpickr(
+			document.getElementById("EndDateTime"), {
+				enableTime: true,
+				dateFormat: "Y-m-d  H:i"
+			});
+
+		this.siteName = document.getElementById("SiteName");
+		this.siteName.addEventListener("input", (e) =>
+		{
+			let value = e.target.value;
+			e.target.dataset.value = value;
+			let selected_option = document.querySelector("#SiteList option[value='"+value+"']")
+			if (selected_option !== null)
+			{
+				let label = selected_option.label;
+				e.target.value = label;
+			}
+		});
+
 		let input_counts = this.element.getElementsByClassName("count");
 		for (let input of input_counts)
 		{
@@ -26,32 +50,6 @@ class NewVisitDialog
 			});
 		}
 
-		this.startDateTime = flatpickr(
-			document.getElementById("StartDateTime"),
-			{
-				enableTime: true,
-				dateFormat: "Y-m-d  H:i"
-			});
-		this.endDateTime = flatpickr(
-			document.getElementById("EndDateTime"),
-			{
-				enableTime: true,
-				dateFormat: "Y-m-d  H:i"
-			});
-
-		this.siteName = document.getElementById("SiteName");
-		this.siteName.addEventListener("input", (e) =>
-		{
-			let value = e.target.value;
-			e.target.dataset.value = value;
-			let selected_option = document.querySelector("#SiteList option[value='"+value+"']")
-			if (selected_option !== null)
-			{
-				let label = selected_option.label;
-				e.target.value = label;
-			}
-		});
-
 		document.getElementById("AddNewVisit").addEventListener("click", (e) =>
 		{
 			if (window.confirm("Submit records?")) this.submit();
@@ -59,7 +57,11 @@ class NewVisitDialog
 
 		document.getElementById("CancelNewVisit").addEventListener("click", (e) =>
 		{
-			if (window.confirm("Discard changes?")) this.clear();
+			if (document.querySelector(".species-entry:not(.inactive)") == null ||
+					window.confirm("Discard changes?"))
+			{
+				this.close();
+			}
 		});
 	}
 
@@ -74,7 +76,7 @@ class NewVisitDialog
 		let req = new XMLHttpRequest();
 		req.addEventListener("load", () =>
 		{
-			if (req.status === 201) this.clear();
+			if (req.status === 201) this.close();
 		});
 		req.open("PUT", req_url);
 
@@ -97,7 +99,6 @@ class NewVisitDialog
 		for (let sighting_inputs of sightings)
 		{
 			let count = sighting_inputs.getElementsByClassName("count")[0].value;
-
 			if (count > 0)
 			{
 				let species_id = sighting_inputs.dataset.speciesId;
@@ -135,5 +136,28 @@ class NewVisitDialog
 			input.checked = null;
 			input.dispatchEvent(new Event("change"));
 		}
+	}
+
+
+	show()
+	{
+		//this.element.classList.remove("slide-out-up");
+		//this.element.classList.add("slide-in");
+		this.element.classList.remove("hidden");
+	}
+
+
+	hide()
+	{
+		//this.element.classList.remove("slide-in");
+		//this.element.classList.add("slide-out-up");
+		this.element.classList.add("hidden");
+	}
+
+
+	close()
+	{
+		this.hide();
+		this.clear();
 	}
 }

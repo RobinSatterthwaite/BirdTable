@@ -1,55 +1,87 @@
 
-let queryParams = new URLSearchParams(window.location.search);
+let QueryParams = new URLSearchParams(window.location.search);
+
+let DateFromInput;
+let DateToInput;
+let SiteInput;
+let IncludeFeralInput;
+
+let DateFrom;
+let DateTo;
+
+
+class SpeciesListContextMenu extends ContextMenu
+{
+	copyTable(e)
+	{
+		let table = getListAsTable();
+		document.body.appendChild(table);
+
+		let range = document.createRange();
+		range.selectNodeContents(table);
+	
+		let selection = window.getSelection();
+		selection.removeAllRanges();
+		selection.addRange(range);
+	
+		document.execCommand("copy");
+
+		document.body.removeChild(table);
+
+		this.close();
+	}
+}
 
 
 function main()
 {
-	let date_from_input = document.getElementById("DateFrom");
-	let date_to_input = document.getElementById("DateTo");
-	let site_input = document.getElementById("SiteName");
-	let include_feral_input = document.getElementById("IncludeFeral");
+	DateFromInput = document.getElementById("DateFrom");
+	DateToInput = document.getElementById("DateTo");
+	SiteInput = document.getElementById("SiteName");
+	IncludeFeralInput = document.getElementById("IncludeFeral");
 
-	let date_from = flatpickr(
-		date_from_input,
-		{
+	new SpeciesListContextMenu(document.getElementById("SpeciesListContextMenu"),
+	                           document.getElementById("SpeciesListContent"));
+
+	DateFrom = flatpickr(
+		DateFromInput, {
 			dateFormat: "Y-m-d (D)"
 		});
-	let date_to = flatpickr(
-		date_to_input,
-		{
+	DateTo = flatpickr(
+		DateToInput, {
 			dateFormat: "Y-m-d (D)"
 		});
 
-	let initial_from_date = queryParams.get("startDate");
+	let initial_from_date = QueryParams.get("startDate");
 	if (initial_from_date !== undefined && initial_from_date !== null)
 	{
-		date_from.setDate(moment(initial_from_date).toDate());
+		DateFrom.setDate(moment(initial_from_date).toDate());
 	}
 
-	let initial_to_date = queryParams.get("endDate");
+	let initial_to_date = QueryParams.get("endDate");
 	if (initial_to_date !== undefined && initial_to_date !== null)
 	{
-		date_to.setDate(moment(initial_to_date).toDate());
+		DateTo.setDate(moment(initial_to_date).toDate());
 	}
 
-	let initial_site = queryParams.get("siteId");
+	let initial_site = QueryParams.get("siteId");
 	if (initial_site !== undefined && initial_site !== null)
 	{
-		site_input.dataset.value = initial_site;
+		SiteInput.dataset.value = initial_site;
 		let selected_option = document.querySelector("#SiteList option[value='"+initial_site+"']")
 		if (selected_option !== null)
 		{
 			let label = selected_option.label;
-			site_input.value = label;
+			SiteInput.value = label;
 		}
 	}
 
-	if (queryParams.get("includeFeral"))
+	if (QueryParams.get("includeFeral"))
 	{
-		include_feral_input.checked = true;
+		IncludeFeralInput.checked = true;
 	}
 
-	site_input.addEventListener("input", (e) =>
+	SiteInput.addEventListener("input", (e) =>
 	{
 		let value = e.target.value;
 		e.target.dataset.value = value;
@@ -61,59 +93,66 @@ function main()
 		}
 	});
 
-	document.getElementById("ApplyFilters").addEventListener("click", (e) =>
+	document.getElementById("ApplyFilters").addEventListener("click", applyFilters);
+	document.getElementById("ClearFilters").addEventListener("click", clearFilters);
+}
+
+
+function applyFilters()
+{
+	if (DateFromInput.value !== "")
 	{
-		if (date_from_input.value !== "")
-		{
-			queryParams.set("startDate", moment(date_from.selectedDates[0]).format("YYYY-MM-DD"));
-		}
-		else
-		{
-			queryParams.delete("startDate");
-		}
-
-		if (date_to_input.value !== "")
-		{
-			queryParams.set("endDate", moment(date_to.selectedDates[0]).format("YYYY-MM-DD"));
-		}
-		else
-		{
-			queryParams.delete("endDate");
-		}
-
-		if (site_input.dataset.value !== "")
-		{
-			queryParams.set("siteId", site_input.dataset.value);
-		}
-		else
-		{
-			queryParams.delete("siteId");
-		}
-
-		if (include_feral_input.checked)
-		{
-			queryParams.set("includeFeral", 1);
-		}
-		else
-		{
-			queryParams.delete("includeFeral");
-		}
-
-		updateList();
-		updateQueryParams();
-	});
-
-	document.getElementById("ClearFilters").addEventListener("click", (e) =>
+		QueryParams.set("startDate", moment(DateFrom.selectedDates[0]).format("YYYY-MM-DD"));
+	}
+	else
 	{
-		date_from.clear();
-		date_to.clear();
-		site_input.value = null;
-		include_feral_input.checked = null;
+		QueryParams.delete("startDate");
+	}
 
-		queryParams = new URLSearchParams();
-		updateList();
-		updateQueryParams();
-	});
+	if (DateToInput.value !== "")
+	{
+		QueryParams.set("endDate", moment(DateTo.selectedDates[0]).format("YYYY-MM-DD"));
+	}
+	else
+	{
+		QueryParams.delete("endDate");
+	}
+
+	if (SiteInput.dataset.value !== "" &&
+	    SiteInput.dataset.value !== undefined)
+	{
+		QueryParams.set("siteId", SiteInput.dataset.value);
+	}
+	else
+	{
+		QueryParams.delete("siteId");
+	}
+
+	if (IncludeFeralInput.checked)
+	{
+		QueryParams.set("includeFeral", 1);
+	}
+	else
+	{
+		QueryParams.delete("includeFeral");
+	}
+
+	updateList();
+	updateQueryParams();
+}
+
+
+function clearFilters()
+{
+	DateFrom.clear();
+	DateTo.clear();
+	SiteInput.value = null;
+	SiteInput.dataset.value = "";
+	IncludeFeralInput.checked = null;
+	
+	QueryParams = new URLSearchParams();
+	updateList();
+	updateQueryParams();
 }
 
 
@@ -122,7 +161,7 @@ function updateQueryParams()
 	let new_url =
 		window.location.protocol+"//"+window.location.host+window.location.pathname;
 
-	let query_url = queryParams.toString();
+	let query_url = QueryParams.toString();
 	if (query_url.length > 0) new_url += "?" + query_url;
 
 	if (new_url !== window.location.href)
@@ -134,9 +173,12 @@ function updateQueryParams()
 
 function updateList()
 {
+	let species_list = document.getElementById("SpeciesList");
+	species_list.classList.add("busy");
+
 	let req_url =
 		window.location.protocol+"//"+window.location.host+"/getList";
-	let query_url = queryParams.toString();
+	let query_url = QueryParams.toString();
 	if (query_url.length > 0) req_url += "?" + query_url; 
 
 	let req = new XMLHttpRequest();
@@ -148,8 +190,69 @@ function updateList()
 			species_list_content.innerHTML = req.responseText;
 			document.getElementById("SpeciesCount").textContent = species_list_content.childElementCount.toString()
 		}
+
+		species_list.classList.remove("busy");
 	});
 	req.open("GET", req_url);
 	req.setRequestHeader("Cache-Control", "no-cache");
 	req.send();
+}
+
+
+function getListAsTable()
+{
+	let thead = document.createElement("thead");
+	let tr = document.createElement("tr")
+	let th = document.createElement("th");
+	th.innerHTML = "Name";
+	tr.appendChild(th);
+	th = document.createElement("th");
+	th.innerHTML = "Binomial name";
+	tr.appendChild(th);
+	th = document.createElement("th");
+	th.innerHTML = "Count";
+	tr.appendChild(th);
+	th = document.createElement("th");
+	th.innerHTML = "Seen";
+	tr.appendChild(th);
+	th = document.createElement("th");
+	th.innerHTML = "Heard";
+	tr.appendChild(th);
+	thead.appendChild(tr);
+
+	let tbody = document.createElement("tbody");
+	let list = document.getElementById("SpeciesListContent").children;
+
+	for (let el of list)
+	{
+		let common_name = el.getElementsByClassName("species-name")[0].textContent;
+		let binomial_name = el.getElementsByClassName("species-binomial-name")[0].textContent;
+		let count = el.getElementsByClassName("count")[0].children[0].textContent;
+		let seen = el.getElementsByClassName("species-seen")[0].textContent;
+		let heard = el.getElementsByClassName("species-heard")[0].textContent;
+
+		let tr = document.createElement("tr");
+		let td = document.createElement("td");
+		td.innerHTML = common_name;
+		tr.appendChild(td);
+		td = document.createElement("td");
+		td.innerHTML = binomial_name;
+		tr.appendChild(td);
+		td = document.createElement("td");
+		td.innerHTML = count;
+		tr.appendChild(td);
+		td = document.createElement("td");
+		td.innerHTML = seen;
+		tr.appendChild(td);
+		td = document.createElement("td");
+		td.innerHTML = heard;
+		tr.appendChild(td);
+		tbody.appendChild(tr);
+	}
+
+	let table = document.createElement("table");
+	table.appendChild(thead);
+	table.appendChild(tbody);
+
+	return table;
 }

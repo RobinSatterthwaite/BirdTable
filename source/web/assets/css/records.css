@@ -1,6 +1,65 @@
 
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
 body {
 	font-size: 10pt;
+}
+
+.records-container {
+	height: calc(100% - 40px);
+	padding: 20px;
+	overflow-y: scroll;
+}
+
+#RecordsTable {
+	display: flex;
+	margin-bottom: 20px;
+}
+
+#RecordsTable > div > div {
+	padding: 5px;
+}
+
+#RecordsTable > div > div:nth-child(2n+3) {
+	background-color: #eee;
+}
+
+#RecordsTable .visit {
+	text-align: center;
+	width: 92px;
+	flex-shrink: 0;
+	background-color: white;
+	border-left: 1px solid #ccc;
+}
+
+.species-names {
+	white-space: nowrap;
+	background-color: white;
+	width: 190px;
+}
+
+.species-names > .heading {
+	width: 180px;
+}
+
+.heading {
+	width: 82px;
+	background-color: white;
+}
+
+.heading.frozen {
+	position: fixed;
+	border-bottom: 1px solid #ccc;
+}
+
+.visit-site {
+	height: 32px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	font-weight: bold;
 }
 
 .species-entry {

@@ -1,0 +1,21 @@
+
+.context-menu {
+	position: absolute;
+	padding: 2px;
+	border: 1px solid #bbb;
+	box-shadow: 4px 2px 2px rgba(0, 0, 0, 0.4);
+}
+
+.context-menu > div {
+	cursor: pointer;
+	padding: 4px;
+	font-weight: bold;
+	text-shadow: 1px 1px 1px lightgray;
+}
+
+.context-menu > div:hover,
+.context-menu > div.selected {
+	background-color: forestgreen;
+	color: white;
+	text-shadow: none;
+}

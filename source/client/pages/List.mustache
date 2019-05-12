@@ -13,8 +13,10 @@
 		<link rel="stylesheet" href="/assets/third-party/flatpickr/flatpickr.min.css">
 		<link rel="stylesheet" href="/assets/third-party/flatpickr/themes/material_green.css">
 
+		<script type="text/javascript" src="/assets/js/ContextMenu.js"></script>
 		<script type="text/javascript" src="/assets/js/ListMain.js"></script>
 		<link rel="stylesheet" href="/assets/css/common.css">
+		<link rel="stylesheet" href="/assets/css/context-menu.css">
 		<link rel="stylesheet" href="/assets/css/list.css">
 
 		<script type="text/javascript">
@@ -87,7 +89,7 @@
 					<span id="SpeciesCount">{{speciesCount}}</span> species
 				</div>
 				<div>
-					Count&nbsp;/&nbsp;times seen
+					Count&nbsp;/&nbsp;records
 				</div>
 				<div class="species-seen-heard">
 					<div></div>
@@ -98,6 +100,10 @@
 			<div id="SpeciesListContent">
 				{{{speciesList}}}
 			</div>
+		</div>
+
+		<div id="SpeciesListContextMenu" class="context-menu hidden">
+			<div data-method="copyTable">Copy Table</div>
 		</div>
 	</body>
 </html>

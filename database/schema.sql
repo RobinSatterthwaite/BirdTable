@@ -81,6 +81,7 @@ CREATE TABLE IF NOT EXISTS `site_image` (
   CONSTRAINT `site_image_site` FOREIGN KEY (`site_fk`) REFERENCES `site` (`pk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 CREATE PROCEDURE get_list(
   IN start_date DATETIME,
   IN end_date DATETIME,
@@ -113,6 +114,7 @@ SELECT
 
 END;
 
+
 CREATE PROCEDURE get_taxonomic_order()
 LANGUAGE SQL
 NOT DETERMINISTIC
@@ -130,6 +132,74 @@ WITH RECURSIVE taxonomic_order (pk, taxonomic_next, common_name) AS (
     JOIN taxonomic_order ON taxonomic_order.taxonomic_next = s.pk
 )
 SELECT pk FROM taxonomic_order;
+
+END;
+
+
+CREATE PROCEDURE get_visits(
+  IN start_date DATETIME,
+  IN end_date DATETIME,
+  IN site_pk INT,
+  IN species_pk INT,
+  IN result_size INT,
+  IN start_index INT
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+BEGIN
+
+CREATE TEMPORARY TABLE `searched_visits` (
+  pk int,
+  site_name tinytext,
+  start_time datetime,
+  end_time datetime);
+
+CREATE TEMPORARY TABLE `selected_visits` (
+  pk int,
+  site_name tinytext,
+  start_time datetime,
+  end_time datetime);
+
+INSERT INTO `searched_visits`
+  SELECT
+    visit.pk as pk,
+    name as site_name,
+    start_time,
+    end_time
+  FROM `visit`
+  JOIN `site` ON site.pk = visit.site_fk
+  JOIN `sighting` ON visit.pk = sighting.visit_fk
+  WHERE ((start_date IS NULL OR start_time >= start_date) AND
+         (end_date IS NULL OR end_time <= end_date)) AND
+        (site_pk IS NULL OR visit.site_fk = site_pk) AND
+        (species_pk IS NULL OR sighting.species_fk = species_pk)
+  GROUP BY visit.pk
+  ORDER BY start_time DESC;
+
+INSERT INTO `selected_visits`
+  SELECT *
+  FROM `searched_visits`
+  LIMIT result_size
+  OFFSET start_index;
+
+SELECT * FROM `selected_visits`;
+
+SELECT
+    visit_fk as visit_pk,
+    species_fk as species_pk,
+    count,
+    seen,
+    heard
+  FROM `sighting`
+  INNER JOIN `selected_visits` ON visit_fk = selected_visits.pk
+  ORDER BY visit_pk;
+
+SELECT COUNT(*) FROM `searched_visits`;
+
+DROP TABLE `searched_visits`;
+DROP TABLE `selected_visits`;
 
 END;
 

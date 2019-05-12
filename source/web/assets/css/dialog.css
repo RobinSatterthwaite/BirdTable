@@ -8,6 +8,6 @@
 	background-color: white;
 }
 
-input[type=number] {
+input[type=number]:not(.flatpickr-time input) {
 	text-align: right;
 }
