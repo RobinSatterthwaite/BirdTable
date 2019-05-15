@@ -2,7 +2,7 @@
 from pystache import TemplateSpec
 
 from .NewVisitSpeciesEntry import NewVisitSpeciesEntry
-from .DataListOption import DataListOption
+from client.pages.DataListOption import DataListOption
 
 
 class NewVisitDialog(TemplateSpec):

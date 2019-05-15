@@ -8,6 +8,7 @@ from db.SiteEntry import SiteEntry
 from client.pages.Home import Home
 from client.pages.List import List
 from client.pages.Records import Records
+from client.pages.recordstable.RecordsTable import RecordsTable
 
 from .SpeciesList import SpeciesList
 from .VisitRecords import VisitRecords
@@ -21,6 +22,7 @@ class Web(object):
 		self.speciesList = SpeciesList(db_conn)
 		self.visitRecords = VisitRecords(db_conn)
 		self.sites = DbTable("site", SiteEntry, db_conn)
+		self.allSpecies = self.speciesList.getAllSpecies()
 		
 		self.homePage = Home()
 
@@ -42,11 +44,15 @@ class Web(object):
 
 	@cherrypy.expose
 	def records(self, **kwargs):
-		species = self.speciesList.getAllSpecies()
 		sites = self.sites.newContext().fetchAll()
-		visits = self.visitRecords.getRecords(kwargs)
-		records_page = Records(self.renderer, species, sites, visits)
+		records_page = Records(self.renderer, self.allSpecies, sites)
 		return self.renderer.render(records_page)
+
+	@cherrypy.expose
+	def getRecords(self, **kwargs):
+		visits, total_visits = self.visitRecords.getRecords(kwargs)
+		records = RecordsTable(self.renderer, self.allSpecies, visits, total_visits)
+		return self.renderer.render(records)
 
 	@cherrypy.expose
 	@cherrypy.tools.json_in()

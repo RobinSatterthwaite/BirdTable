@@ -26,11 +26,26 @@
 	</head>
 
 	<body>
-		<div class="records-container">
-			<button type=button id="NewVisit">New</button>
-			<div id="RecordsTable">
-				{{{recordsTable}}}
+		<div id="RecordsContainer">
+			<div>
+				<button type=button id="NewVisit">New</button>
+				<button type=button id="EditVisit">Edit</button>
 			</div>
+			<div class="table-controls">
+				<button type=button id="FirstPage" disabled="">&lt;&lt;</button>
+				<button type=button id="PreviousPage" disabled="">&lt;</button>
+				<div>
+					Page
+					<input type="number" id="PageNum" min=1 max={{maxPageNum}}>
+					/
+					<div id="MaxPageNum"></div>
+					&mdash; Page size
+					<input type="number" id="PageSize" value=12 min=1>
+				</div>
+				<button type=button id="NextPage" disabled="">&gt;</button>
+				<button type=button id="LastPage" disabled="">&gt;&gt;</button>
+			</div>
+			<div id="RecordsTable"></div>	
 		</div>
 
 		{{{newVisitDialog}}}

@@ -8,51 +8,96 @@ body {
 	font-size: 10pt;
 }
 
-.records-container {
+#RecordsContainer {
 	height: calc(100% - 40px);
 	padding: 20px;
 	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.table-controls {
+	display: flex;
+	width: calc(100% - 23px);
+	padding: 10px;
+	margin: 0 1px;
+	background-color: white;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	border-bottom: 1px solid #ccc;
+}
+
+.table-controls > div {
+	width: 100%;
+	text-align: center;
+}
+
+#PageNum {
+	width: 4em;
+}
+
+#PageSize {
+	width: 3em;
+}
+
+#MaxPageNum {
+	display: inline;
 }
 
 #RecordsTable {
-	display: flex;
+	display: table;
 	margin-bottom: 20px;
 }
 
-#RecordsTable > div > div {
-	padding: 5px;
+#RecordsTable.busy {
+	opacity: 0.4;
 }
 
-#RecordsTable > div > div:nth-child(2n+3) {
+#RecordsTable > div {
+	background-color: white;
+}
+
+#RecordsTable > div:first-child {
+	display: table-header-group;
+	border-bottom: 1px solid #ccc;
+}
+
+#RecordsTable > div:nth-child(n+2) {
+	display: table-row;
+}
+
+#RecordsTable > div.filtered {
+	display: none;
+}
+
+#RecordsTable > div.odd {
 	background-color: #eee;
 }
 
-#RecordsTable .visit {
+#RecordsTable > div.frozen {
+	position: fixed;
+	top: 0;
+}
+
+#RecordsTable > div > div {
+	display: table-cell;
+	padding: 5px;
 	text-align: center;
-	width: 92px;
-	flex-shrink: 0;
-	background-color: white;
+	min-width: 82px;
+	width: 82px;
+	max-width: 82px;
 	border-left: 1px solid #ccc;
 }
 
-.species-names {
-	white-space: nowrap;
-	background-color: white;
-	width: 190px;
-}
-
-.species-names > .heading {
+#RecordsTable > div > div:first-child {
+	min-width: 180px;
 	width: 180px;
+	max-width: 180px;
+	text-align: left;
+	white-space: nowrap;
 }
 
-.heading {
-	width: 82px;
-	background-color: white;
-}
-
-.heading.frozen {
-	position: fixed;
-	border-bottom: 1px solid #ccc;
+#RecordsTable .visit-heading {
+	cursor: pointer;
 }
 
 .visit-site {
@@ -60,6 +105,14 @@ body {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	font-weight: bold;
+}
+
+.visit-date {
+	display: none;
+}
+
+#TotalNumRecords {
+	display: none !important;
 }
 
 .species-entry {

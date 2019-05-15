@@ -57,14 +57,9 @@ class VisitRecords(object):
 			end_date += timedelta(hours=23, minutes=59, seconds=59, milliseconds=999)
 			end_date_time = end_date.strftime("%Y-%m-%d %H:%M:%S")
 
-		page_size = 12
-		page_size_arg = query_args.get("pageSize")
-		if page_size_arg is not None:
-			page_size = page_size_arg
-
 		start_index = 0
 		start_index_arg = query_args.get("startIndex")
-		if start_date_arg is not None:
+		if start_index_arg is not None:
 			start_index = start_index_arg
 
 		query_params = (
@@ -72,7 +67,7 @@ class VisitRecords(object):
 			end_date_time,
 			query_args.get("siteId"),
 			query_args.get("speciesId"),
-			page_size,
+			query_args.get("numResults"),
 			start_index)
 
 		try:
@@ -83,7 +78,7 @@ class VisitRecords(object):
 			if sql_state == "08003" or sql_state == "08007" or sql_state == "08S01":
 				self.dbConn.connect()
 				cursor = self.dbConn.cursor()
-				cursor.execute("call get_visits(?, ?, ?)", query_params)
+				cursor.execute("call get_visits(?, ?, ?, ?, ?, ?)", query_params)
 
 		visits = {}
 		visits_list = []
@@ -103,4 +98,8 @@ class VisitRecords(object):
 			species_pk = d['species_pk']
 			visits[visit_pk]['sightings'][species_pk] = d
 
-		return visits_list
+		cursor.nextset()
+
+		num_visits = cursor.fetchone()[0]
+
+		return visits_list, num_visits
