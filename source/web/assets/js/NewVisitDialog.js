@@ -29,6 +29,8 @@ class NewVisitDialog
 			}
 		});
 
+		this.visitNotes = document.getElementById("VisitNotes");
+
 		let input_counts = this.element.getElementsByClassName("count");
 		for (let input of input_counts)
 		{
@@ -93,6 +95,7 @@ class NewVisitDialog
 		visit.StartTime = moment(this.startDateTime.selectedDates[0]).toISOString();
 		visit.EndTime = moment(this.endDateTime.selectedDates[0]).toISOString();
 		visit.Site = Number(this.siteName.dataset.value);
+		visit.Notes = this.visitNotes.value;
 		visit.Sightings = [];
 
 		let sightings = this.element.getElementsByClassName("species-entry");
@@ -128,6 +131,8 @@ class NewVisitDialog
 	{
 		this.startDateTime.clear();
 		this.endDateTime.clear();
+		this.visitNotes.value = null;
+		this.visitNotes.dispatchEvent(new Event("change"));
 
 		let inputs = this.element.getElementsByTagName("input");
 		for (let input of inputs)
@@ -136,6 +141,8 @@ class NewVisitDialog
 			input.checked = null;
 			input.dispatchEvent(new Event("change"));
 		}
+
+		document.getElementById("NewVisitContainer").scrollTop = 0;
 	}
 
 

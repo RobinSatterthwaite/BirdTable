@@ -26,6 +26,7 @@ class VisitRecords(object):
 		visit.site = visit_data["Site"]
 		visit.startTime = start_time.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
 		visit.endTime = end_time.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+		visit.notes = visit_data["Notes"]
 		visits_ctx.commit()
 
 		sightings_data = visit_data["Sightings"]

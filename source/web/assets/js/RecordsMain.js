@@ -54,11 +54,6 @@ function main()
 			}
 		});
 
-		if (PageNumInput.value === "")
-		{
-			PageNumInput.value = MaxPageNum;
-		}
-
 		PageNumInput.addEventListener("change", (e) =>
 		{
 			updatePageOptions();
@@ -135,6 +130,7 @@ function updatePageOptions()
 		QueryParams.delete("startIndex");
 	}
 
+	let previous_page_size_value = QueryParams.get("numResults");
 	if (!isNaN(page_size_value))
 	{
 		QueryParams.set("numResults", page_size_value);
@@ -188,41 +184,41 @@ function processUpdatedTable()
 
 	TotalNumRecords = parseInt(document.getElementById("TotalNumRecords").textContent, 10);
 	let page_size_value = parseInt(PageSizeInput.value, 10);
+
+	let start_index = QueryParams.get("startIndex");
+	if (start_index === null) start_index = 0;
+
 	MaxPageNum = Math.ceil(TotalNumRecords/page_size_value);
 	document.getElementById("MaxPageNum").textContent = MaxPageNum;
-	if (PageNumInput.value === "")
+	PageNumInput.value = MaxPageNum-Math.ceil(start_index/page_size_value);
+
+	if (start_index >= TotalNumRecords-page_size_value)
 	{
-		PageNumInput.value = MaxPageNum;
+		FirstPageButton.disabled = true;
+		PreviousPageButton.disabled = true;
+	}
+	else
+	{
+		FirstPageButton.disabled = false;
+		PreviousPageButton.disabled = false;
 	}
 
-	let page_num_value = parseInt(PageNumInput.value, 10);
-	if (!isNaN(page_num_value))
+	if (start_index <= 0)
 	{
-		if (page_num_value > 1)
-		{
-			FirstPageButton.disabled = false;
-			PreviousPageButton.disabled = false;
-		}
-		else
-		{
-			FirstPageButton.disabled = true;
-			PreviousPageButton.disabled = true;
-		}
-	
-		if (page_num_value < MaxPageNum)
-		{
-			NextPageButton.disabled = false;
-			LastPageButton.disabled = false;
-		}
-		else
-		{
-			NextPageButton.disabled = true;
-			LastPageButton.disabled = true;
-		}
+		NextPageButton.disabled = true;
+		LastPageButton.disabled = true;
 	}
+	else
+	{
+		NextPageButton.disabled = false;
+		LastPageButton.disabled = false;
+	}
+
+	document.getElementById("ToggleFilters").addEventListener(
+		"dblclick", toggleFilters);
 
 	let headings = RecordsTable.getElementsByClassName("visit-heading");
-	let counter = 0;
+	let counter = 1;
 	for (let heading of headings)
 	{
 		(function()
@@ -235,6 +231,83 @@ function processUpdatedTable()
 		}());
 		counter++;
 	}
+
+	let selected_species_id = QueryParams.get("speciesId");
+
+	let species_names = RecordsTable.getElementsByClassName("species-name");
+	for (let name of species_names)
+	{
+		name.addEventListener("dblclick", (e) =>
+		{
+			let species_id = e.target.dataset.id;
+			let current_species_id = QueryParams.get("speciesId");
+			if (current_species_id !== null &&
+			    current_species_id === species_id)
+			{
+				QueryParams.delete("speciesId");
+			}
+			else
+			{
+				QueryParams.set("speciesId", species_id);
+			}
+
+			updateTable();
+		});
+
+		if (selected_species_id !== null &&
+		    selected_species_id === name.dataset.id)
+		{
+			name.parentElement.classList.add("selected");
+		}
+	}
+}
+
+
+function toggleFilters()
+{
+	let filters_set = false;
+
+	let filtered_rows = RecordsTable.getElementsByClassName("filtered");
+	if (filtered_rows.length > 0)
+	{
+		filters_set = true;
+		while (filtered_rows.length > 0)
+		{
+			filtered_rows[0].classList.remove("filtered");
+		}
+
+		RecordsTable.className = "";
+	}
+
+	if (QueryParams.get("speciesId") !== null)
+	{
+		filters_set = true;
+		QueryParams.delete("speciesId");
+		updateTable();
+	}
+	
+	if (!filters_set)
+	{
+		let rows = RecordsTable.getElementsByClassName("species-records");	
+		for (let row of rows)
+		{
+			let row_is_empty = true;
+			
+			let row_children = Array.prototype.slice.call(row.children, 1);
+			for (let child of row_children)
+			{
+				if (child.textContent.trim() !== "")
+				{
+					row_is_empty = false;
+					break;
+				}
+			}
+
+			if (row_is_empty) row.classList.add("filtered");
+		}
+	}
+
+	regenerateOddRows();
 }
 
 
@@ -243,7 +316,7 @@ function filterRowsForContentsOfColumn(column_num)
 	let rows = RecordsTable.getElementsByClassName("species-records");
 	for (let row of rows)
 	{
-		if (row.children[column_num+1].textContent.trim() === "")
+		if (row.children[column_num].textContent.trim() === "")
 		{
 			row.classList.add("filtered");
 		}
@@ -253,6 +326,8 @@ function filterRowsForContentsOfColumn(column_num)
 		}
 	}
 
+	RecordsTable.className = `select-column-${column_num}`;
+
 	regenerateOddRows();
 }
 
@@ -261,6 +336,7 @@ function regenerateOddRows()
 {
 	let rows = RecordsTable.getElementsByClassName("species-records");
 	let counter = 1;
+	let last_visible_row;
 	for (let row of rows)
 	{
 		if (row.classList.contains("filtered")) continue;
@@ -268,5 +344,13 @@ function regenerateOddRows()
 		if (counter%2 === 0) row.classList.remove("odd");
 		else                 row.classList.add("odd");
 		counter++;
+
+		row.classList.remove("last-visible");
+		last_visible_row = row;
+	}
+
+	if (last_visible_row !== undefined)
+	{
+		last_visible_row.classList.add("last-visible");
 	}
 }

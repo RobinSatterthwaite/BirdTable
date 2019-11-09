@@ -12,6 +12,7 @@ from client.pages.recordstable.RecordsTable import RecordsTable
 
 from .SpeciesList import SpeciesList
 from .VisitRecords import VisitRecords
+from .SiteTree import SiteTree
 
 
 class Web(object):
@@ -23,12 +24,15 @@ class Web(object):
 		self.visitRecords = VisitRecords(db_conn)
 		self.sites = DbTable("site", SiteEntry, db_conn)
 		self.allSpecies = self.speciesList.getAllSpecies()
+		self.siteTree = SiteTree(db_conn)
 		
 		self.homePage = Home()
+
 
 	@cherrypy.expose
 	def index(self):
 		return self.renderer.render(self.homePage)
+
 
 	@cherrypy.expose
 	def list(self, **kwargs):
@@ -37,10 +41,12 @@ class Web(object):
 		list_page = List(self.renderer, species_list, sites_list)
 		return self.renderer.render(list_page)
 
+
 	@cherrypy.expose
 	def getList(self, **kwargs):
 		species_list = self.speciesList.getList(kwargs)
 		return List.SpeciesList(species_list, self.renderer)
+
 
 	@cherrypy.expose
 	def records(self, **kwargs):
@@ -48,17 +54,20 @@ class Web(object):
 		records_page = Records(self.renderer, self.allSpecies, sites)
 		return self.renderer.render(records_page)
 
+
 	@cherrypy.expose
 	def getRecords(self, **kwargs):
 		visits, total_visits = self.visitRecords.getRecords(kwargs)
 		records = RecordsTable(self.renderer, self.allSpecies, visits, total_visits)
 		return self.renderer.render(records)
 
+
 	@cherrypy.expose
 	@cherrypy.tools.json_in()
 	def newVisit(self):
 		self.visitRecords.newVisit(cherrypy.request.json)
 		cherrypy.response.status = 201
+
 
 	@cherrypy.expose
 	def maps(self):

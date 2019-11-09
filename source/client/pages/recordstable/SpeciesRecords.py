@@ -10,26 +10,28 @@ class SpeciesRecords(TemplateSpec):
 		self.species = species
 		self.visits = visits
 
+		self.speciesId = self.species['pk']
+		
+		self.recordIsEmpty = True
+		self.sightingsList = []
+		for visit in reversed(self.visits):
+			sightings = visit['sightings']
+			if self.speciesId in sightings:
+				count = sightings[self.speciesId]['count']
+				feral = sightings[self.speciesId]['feral']
+				feral_marker = ""
+				if feral is not None and feral > 0:
+					feral_marker = "*"
+				self.sightingsList.append("<div>{0}{1}</div>".format(
+					count, feral_marker))
+				self.recordIsEmpty = False
+			else:
+				self.sightingsList.append("<div>&nbsp;</div>")
+
 
 	def speciesName(self):
 		return self.species['common_name']
 
 
 	def sightings(self):
-		species_pk = self.species['pk']
-		
-		sightings_list = []
-		for visit in reversed(self.visits):
-			sightings = visit['sightings']
-			if species_pk in sightings:
-				count = sightings[species_pk]['count']
-				feral = sightings[species_pk]['feral']
-				feral_marker = ""
-				if feral is not None and feral > 0:
-					feral_marker = "*"
-				sightings_list.append("<div>{0}{1}</div>".format(
-					count, feral_marker))
-			else:
-				sightings_list.append("<div>&nbsp;</div>")
-
-		return "".join(sightings_list)
+		return "".join(self.sightingsList)

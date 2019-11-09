@@ -17,11 +17,15 @@ class VisitEntry(DbEntry):
 		self._endTime = DbProperty("end_time")
 		self.properties.append(self._endTime)
 
+		self._notes = DbProperty("notes")
+		self.properties.append(self._notes)
+
 		if row != None:
 			self._primaryKey.value = row.pk
 			self._site.value = row.site_fk
 			self._startTime.value = row.start_time
 			self._endTime.value = row.end_time
+			self._notes.value = row.notes
 
 
 	@property
@@ -47,3 +51,11 @@ class VisitEntry(DbEntry):
 	@endTime.setter
 	def endTime(self, end_time):
 		self._endTime.set(end_time)
+
+	@property
+	def notes(self):
+		return self._notes.value
+
+	@notes.setter
+	def notes(self, notes_txt):
+		self._notes.set(notes_txt)

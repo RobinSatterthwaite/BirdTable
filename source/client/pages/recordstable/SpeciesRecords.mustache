@@ -1,5 +1,5 @@
-<div class="species-records">
-	<div>
+<div class="species-records {{#recordIsEmpty}}filtered{{/recordIsEmpty}}">
+	<div class="species-name" data-id="{{speciesId}}">
 		{{speciesName}}
 	</div>
 	{{{sightings}}}

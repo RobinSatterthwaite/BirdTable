@@ -15,8 +15,10 @@ class List(object):
 	def SpeciesList(species_selection, renderer):
 		species_list = []
 
-		max_times_seen = max(species_selection,
-		                     key=lambda s:s['times_seen'])['times_seen']
+		max_times_seen = 0
+		if len(species_selection) > 0:
+			max_times_seen = max(species_selection,
+			                     key=lambda s:s['times_seen'])['times_seen']
 
 		for species in species_selection:
 			el = SpeciesElement(

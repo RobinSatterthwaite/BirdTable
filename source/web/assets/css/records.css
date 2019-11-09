@@ -15,15 +15,23 @@ body {
 	overflow-x: hidden;
 }
 
+.records-controls {
+	margin: 0 0 10px;
+}
+
 .table-controls {
 	display: flex;
 	width: calc(100% - 23px);
 	padding: 10px;
-	margin: 0 1px;
+	margin: 0;
 	background-color: white;
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px;
 	border-bottom: 1px solid #ccc;
+}
+
+.table-controls > button {
+	margin-right: 4px;
 }
 
 .table-controls > div {
@@ -45,7 +53,14 @@ body {
 
 #RecordsTable {
 	display: table;
+	border-collapse: collapse;
 	margin-bottom: 20px;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	--selected-column: 3;
 }
 
 #RecordsTable.busy {
@@ -94,10 +109,182 @@ body {
 	max-width: 180px;
 	text-align: left;
 	white-space: nowrap;
+	border-left: 0;
 }
 
-#RecordsTable .visit-heading {
+#ToggleFilters,
+#RecordsTable .visit-heading,
+#RecordsTable .species-name {
 	cursor: pointer;
+}
+
+#RecordsTable .species-records.selected {
+	border: 1px solid #666;
+}
+
+#RecordsTable .species-records.selected > div:first-child {
+	border-left: 1px solid #666;
+}
+
+#RecordsTable.select-column-1 > div:first-child > div:nth-child(2) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-1 > div > div:nth-child(2) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-1 > div.last-visible > div:nth-child(2) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-2 > div:first-child > div:nth-child(3) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-2 > div > div:nth-child(3) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-2 > div.last-visible > div:nth-child(3) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-3 > div:first-child > div:nth-child(4) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-3 > div > div:nth-child(4) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-3 > div.last-visible > div:nth-child(4) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-4 > div:first-child > div:nth-child(5) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-4 > div > div:nth-child(5) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-4 > div.last-visible > div:nth-child(5) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-5 > div:first-child > div:nth-child(6) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-5 > div > div:nth-child(6) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-5 > div.last-visible > div:nth-child(6) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-6 > div:first-child > div:nth-child(7) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-6 > div > div:nth-child(7) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-6 > div.last-visible > div:nth-child(7) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-7 > div:first-child > div:nth-child(8) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-7 > div > div:nth-child(8) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-7 > div.last-visible > div:nth-child(8) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-8 > div:first-child > div:nth-child(9) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-8 > div > div:nth-child(9) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-8 > div.last-visible > div:nth-child(9) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-9 > div:first-child > div:nth-child(10) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-9 > div > div:nth-child(10) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-9 > div.last-visible > div:nth-child(10) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-10 > div:first-child > div:nth-child(11) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-10 > div > div:nth-child(11) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-10 > div.last-visible > div:nth-child(11) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-11 > div:first-child > div:nth-child(12) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-11 > div > div:nth-child(12) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-11 > div.last-visible > div:nth-child(12) {
+	border-bottom: 1px solid #666;
+}
+
+#RecordsTable.select-column-12 > div:first-child > div:nth-child(13) {
+	border-top: 1px solid #666;
+}
+
+#RecordsTable.select-column-12 > div > div:nth-child(13) {
+	border-left: 1px solid #666;
+	border-right: 1px solid #666;
+}
+
+#RecordsTable.select-column-12 > div.last-visible > div:nth-child(13) {
+	border-bottom: 1px solid #666;
+}
+
+#NewVisitContainer {
+	height: calc(100% - 41px);
+	overflow-y: scroll;
 }
 
 .visit-site {
