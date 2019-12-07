@@ -1,8 +1,8 @@
 
 from pystache import TemplateSpec
 
-from .VisitRecordHeading import VisitRecordHeading
-from .SpeciesRecords import SpeciesRecords
+from .SpeciesName import SpeciesName
+from .VisitRecord import VisitRecord
 
 
 class RecordsTable(TemplateSpec):
@@ -12,25 +12,33 @@ class RecordsTable(TemplateSpec):
 	def __init__(self, renderer, species, visits, total_num_visits):
 		self.renderer = renderer
 		self.species = species
-		self.visits = visits
+
 		self.totalNumVisits = total_num_visits
+		self.speciesSet = set()
+		self.visitsList = []
+
+		for visit in reversed(visits):
+			for particular_species in self.species:
+				species_id = particular_species['pk']
+				if species_id in visit['sightings']:
+					self.speciesSet.add(species_id)
+
+		for visit in reversed(visits):
+			visit_record = VisitRecord(visit, species, self.speciesSet)
+			self.visitsList.append(self.renderer.render(visit_record))
 
 
-	def visitHeadings(self):
-		visits_list = []
-
-		for visit in reversed(self.visits):
-			visit_heading = VisitRecordHeading(visit)
-			visits_list.append(self.renderer.render(visit_heading))
-
-		return "".join(visits_list)
-
-
-	def speciesRecords(self):
+	def speciesNames(self):
 		species_list = []
 
-		for species in self.species:
-			species_records = SpeciesRecords(species, self.visits)
-			species_list.append(self.renderer.render(species_records))
-		
+		for particular_species in self.species:
+			species_id = particular_species['pk']
+			if species_id in self.speciesSet:
+				species_name = SpeciesName(particular_species)
+				species_list.append(self.renderer.render(species_name))
+
 		return "".join(species_list)
+
+
+	def visitRecords(self):
+		return "".join(self.visitsList)

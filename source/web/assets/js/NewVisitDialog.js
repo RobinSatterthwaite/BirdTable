@@ -30,6 +30,32 @@ class NewVisitDialog
 		});
 
 		this.visitNotes = document.getElementById("VisitNotes");
+		this.visitNotes.addEventListener("keyup", (e) =>
+		{
+			if (e.isComposing) return;
+
+			if (e.key == "\\")
+			{
+				let cursor_pos = e.target.selectionStart-1;
+				let pos = e.target.value.lastIndexOf(' ', cursor_pos)+1;
+				if (pos > 0 && cursor_pos > pos)
+				{
+					let pre_word = e.target.value.substring(0, pos);
+					let word = e.target.value.substring(pos, cursor_pos);
+					let post_word = e.target.value.substring(cursor_pos+1);
+					
+					switch (word)
+					{
+					case "deg":
+					case "degrees":
+						e.target.value = pre_word + '\u00b0' + post_word;
+						break;
+					default:
+						break;
+					}
+				}
+			}
+		});
 
 		let input_counts = this.element.getElementsByClassName("count");
 		for (let input of input_counts)

@@ -1,15 +1,12 @@
-<div>
-	<div id="ToggleFilters">
+<div data-total-records="{{totalNumVisits}}">
+	<div class="visit-heading">
 		<div>&nbsp;</div>
 		<div>&nbsp;<br/>&nbsp;</div>
 	</div>
-	{{{visitHeadings}}}
-</div>
-<div style="display: none;">
-	<div>
+	<div class="heading-placeholder">
 		<div>&nbsp;</div>
 		<div>&nbsp;<br/>&nbsp;</div>
 	</div>
+	{{{speciesNames}}}
 </div>
-{{{speciesRecords}}}
-<div id="TotalNumRecords">{{totalNumVisits}}</div>
+{{{visitRecords}}}

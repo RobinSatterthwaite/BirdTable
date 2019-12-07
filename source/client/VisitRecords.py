@@ -1,6 +1,5 @@
 
 from datetime import datetime, timezone, timedelta
-import pyodbc as odbc
 
 from db.Table import Table as DbTable
 from db.VisitEntry import VisitEntry
@@ -104,3 +103,29 @@ class VisitRecords(object):
 		num_visits = cursor.fetchone()[0]
 
 		return visits_list, num_visits
+
+
+	def getRecord(self, visit_pk):
+		try:
+			cursor = self.dbConn.cursor()
+			cursor.execute("call get_visit(?)", visit_pk)
+		except odbc.OperationalError as e:
+			sql_state = e.args[0]
+			if sql_state == "08003" or sql_state == "08007" or sql_state == "08S01":
+				self.dbConn.connect()
+				cursor = self.dbConn.cursor()
+				cursor.execute("call get_visit(?)", visit_pk)
+
+		field_names = [field[0] for field in cursor.description]
+		visit = dict(zip(field_names, cursor.fetchone()))
+		visit['sightings'] = {}
+
+		cursor.nextset()
+
+		field_names = [field[0] for field in cursor.description]
+		for row in cursor:
+			sighting = dict(zip(field_names, row))
+			species_pk = sighting['species_pk']
+			visit['sightings'][species_pk] = sighting
+
+		return visit

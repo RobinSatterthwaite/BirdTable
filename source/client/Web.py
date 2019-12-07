@@ -9,6 +9,7 @@ from client.pages.Home import Home
 from client.pages.List import List
 from client.pages.Records import Records
 from client.pages.recordstable.RecordsTable import RecordsTable
+from client.pages.viewvisitrecordoverlay.ViewVisitRecordOverlay import ViewVisitRecordOverlay
 
 from .SpeciesList import SpeciesList
 from .VisitRecords import VisitRecords
@@ -50,8 +51,8 @@ class Web(object):
 
 	@cherrypy.expose
 	def records(self, **kwargs):
-		sites = self.sites.newContext().fetchAll()
-		records_page = Records(self.renderer, self.allSpecies, sites)
+		sites_list = self.sites.newContext().fetchAll()
+		records_page = Records(self.renderer, self.allSpecies, sites_list)
 		return self.renderer.render(records_page)
 
 
@@ -60,6 +61,13 @@ class Web(object):
 		visits, total_visits = self.visitRecords.getRecords(kwargs)
 		records = RecordsTable(self.renderer, self.allSpecies, visits, total_visits)
 		return self.renderer.render(records)
+
+
+	@cherrypy.expose
+	def getVisitRecord(self, **kwargs):
+		visit = self.visitRecords.getRecord(kwargs.get("visitId"))
+		visit_record = ViewVisitRecordOverlay(self.renderer, visit, self.allSpecies)
+		return self.renderer.render(visit_record)
 
 
 	@cherrypy.expose

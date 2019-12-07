@@ -207,6 +207,38 @@ SELECT pk, common_name FROM taxonomic_order;
 END;
 
 
+CREATE PROCEDURE get_visit(
+  IN visit_pk INT
+)
+LANGUAGE SQL
+NOT DETERMINISTIC
+CONTAINS SQL
+SQL SECURITY DEFINER
+BEGIN
+
+SELECT
+    site.name AS site_name,
+    visit.start_time,
+    visit.end_time,
+    visit.notes
+  FROM `visit`
+  JOIN `site` ON site.pk = visit.site_fk
+  WHERE visit.pk = visit_pk;
+
+SELECT
+    species_fk AS species_pk,
+    count,
+    uncertainty,
+    seen,
+    heard,
+    feral,
+    notes
+  FROM `sighting`
+  WHERE sighting.visit_fk = visit_pk;
+
+END;
+
+
 CREATE PROCEDURE get_visits(
   IN start_date DATETIME,
   IN end_date DATETIME,

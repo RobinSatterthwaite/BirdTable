@@ -1,0 +1,24 @@
+<div class="species-entry" data-species-id={{speciesId}}>
+	<div style="width: 24px; text-align: right">{{index}}.</div>
+	<div style="width: 180px; padding-left: 20px">{{speciesName}}</div>
+	<div style="width: 120px; text-align: left">
+		<span style="display: inline-block; width: 50%; text-align: right">{{count}}</span>
+		<span>
+			{{#isUncertaintyMoreThanZero}}
+				&nbsp;&pm;&nbsp;{{uncertainty}}
+			{{/isUncertaintyMoreThanZero}}
+		</span>
+	</div>
+	<div style="width: 80px; text-align: right">
+		<span>{{#isSeen}}Seen{{/isSeen}}</span>
+	</div>
+	<div style="width: 120px; text-align: center">
+		<span>{{#isHeard}}Heard{{/isHeard}}</span>
+	</div>
+	<div style="width: 80px; text-align: left">
+		<span>{{#isFeral}}Feral{{/isFeral}}</span>
+	</div>
+	<div style="min-width: 300px">
+		<span>{{notes}}</span>
+	</div>
+</div>
