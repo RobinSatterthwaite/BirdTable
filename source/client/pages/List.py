@@ -5,11 +5,11 @@ from .DataListOption import DataListOption
 
 class List(object):
 	
-	def __init__(self, renderer, species_selection, sites):
+	def __init__(self, renderer, species_selection, site_tree):
 		self.renderer = renderer
 		
 		self.speciesSelection = species_selection
-		self.sites = sites
+		self.siteTree = site_tree
 
 	
 	def SpeciesList(species_selection, renderer):
@@ -42,13 +42,24 @@ class List(object):
 		return len(self.speciesSelection)
 
 
-	def siteListOptions(self):
-		site_list = []
-		for site in self.sites:
-			site_option = DataListOption(site.primaryKey, site.name)
-			site_list.append(self.renderer.render(site_option))
+	def areaListOptions(self):
+		area_list = self.siteTree.getNodes()
+		area_options = []
+		for area in area_list:
+			area_option = DataListOption(area.id, area.name)
+			area_options.append(self.renderer.render(area_option))
 
-		return "".join(site_list)
+		return "".join(area_options)
+
+
+	def siteListOptions(self):
+		site_list = self.siteTree.getSites()
+		site_options = []
+		for site in site_list:
+			site_option = DataListOption(site.id, site.name)
+			site_options.append(self.renderer.render(site_option))
+
+		return "".join(site_options)
 
 
 	# def countyListOptions(self):

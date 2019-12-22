@@ -1,5 +1,5 @@
 
-from .newvisitdialog.NewVisitDialog import NewVisitDialog
+from .neweditvisitrecordoverlay.NewEditVisitRecordOverlay import NewEditVisitRecordOverlay
 
 
 class Records(object):
@@ -7,8 +7,8 @@ class Records(object):
 	def __init__(self, renderer, species, sites):
 		self.renderer = renderer
 
-		self._newVisitDialog = NewVisitDialog(renderer, species, sites)
+		self._newEditVisitRecordOverlay = NewEditVisitRecordOverlay(renderer, species, sites)
 
 
-	def newVisitDialog(self):
-		return self.renderer.render(self._newVisitDialog)
+	def newEditVisitRecordOverlay(self):
+		return self.renderer.render(self._newEditVisitRecordOverlay)

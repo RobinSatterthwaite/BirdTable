@@ -7,8 +7,9 @@ from db.SpeciesEntry import SpeciesEntry
 
 class SpeciesList(object):
 	
-	def __init__(self, db_conn):
+	def __init__(self, db_conn, site_tree):
 		self.dbConn = db_conn
+		self.siteTree = site_tree
 		
 		cursor = self.dbConn.cursor()
 		cursor.execute("call get_taxonomic_order()")
@@ -34,7 +35,7 @@ class SpeciesList(object):
 			if sql_state == "08003" or sql_state == "08007" or sql_state == "08S01":
 				self.dbConn.connect()
 				cursor = self.dbConn.cursor()
-			cursor.execute("select * from species")
+				cursor.execute("select * from species")
 
 		field_names = [field[0] for field in cursor.description]
 
@@ -69,10 +70,19 @@ class SpeciesList(object):
 		if include_feral is not None:
 			include_feral = int(include_feral)
 
+		site_id_arg = query_args.get("siteId")
+		if site_id_arg is None:
+			area_id_arg = query_args.get("areaId")
+			if area_id_arg is not None:
+				site_list = self.siteTree.getSitesFromNode(int(area_id_arg))
+				site_id_list = [str(site.id) for site in site_list]
+				site_id_arg = ",".join(site_id_list)
+				print(site_id_arg)
+
 		query_params = (
 			start_date_time,
 			end_date_time,
-			query_args.get("siteId"),
+			site_id_arg,
 			include_feral)
 
 		try:

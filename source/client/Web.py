@@ -2,14 +2,12 @@
 import cherrypy
 import pystache
 
-from db.Table import Table as DbTable
-from db.SiteEntry import SiteEntry
-
 from client.pages.Home import Home
 from client.pages.List import List
 from client.pages.Records import Records
 from client.pages.recordstable.RecordsTable import RecordsTable
 from client.pages.viewvisitrecordoverlay.ViewVisitRecordOverlay import ViewVisitRecordOverlay
+from client.pages.DataListOption import DataListOption
 
 from .SpeciesList import SpeciesList
 from .VisitRecords import VisitRecords
@@ -21,11 +19,11 @@ class Web(object):
 	def __init__(self, db_conn):
 		self.renderer = pystache.Renderer()
 		
-		self.speciesList = SpeciesList(db_conn)
-		self.visitRecords = VisitRecords(db_conn)
-		self.sites = DbTable("site", SiteEntry, db_conn)
-		self.allSpecies = self.speciesList.getAllSpecies()
 		self.siteTree = SiteTree(db_conn)
+		self.speciesList = SpeciesList(db_conn, self.siteTree)
+		self.allSpecies = self.speciesList.getAllSpecies()
+		self.visitRecords = VisitRecords(db_conn)
+		self.allSites = self.siteTree.getSites()
 		
 		self.homePage = Home()
 
@@ -38,8 +36,7 @@ class Web(object):
 	@cherrypy.expose
 	def list(self, **kwargs):
 		species_list = self.speciesList.getList(kwargs)
-		sites_list = self.sites.newContext().fetchAll()
-		list_page = List(self.renderer, species_list, sites_list)
+		list_page = List(self.renderer, species_list, self.siteTree)
 		return self.renderer.render(list_page)
 
 
@@ -51,8 +48,7 @@ class Web(object):
 
 	@cherrypy.expose
 	def records(self, **kwargs):
-		sites_list = self.sites.newContext().fetchAll()
-		records_page = Records(self.renderer, self.allSpecies, sites_list)
+		records_page = Records(self.renderer, self.allSpecies, self.allSites)
 		return self.renderer.render(records_page)
 
 
@@ -75,6 +71,29 @@ class Web(object):
 	def newVisit(self):
 		self.visitRecords.newVisit(cherrypy.request.json)
 		cherrypy.response.status = 201
+
+
+	@cherrypy.expose
+	@cherrypy.tools.json_in()
+	def editVisit(self, **kwargs):
+		visit_pk = kwargs.get("visitId")
+		self.visitRecords.editVisit(visit_pk, cherrypy.request.json)
+
+
+	@cherrypy.expose
+	def getSiteOptions(self, **kwargs):
+		site_list = self.siteTree.getSitesFromNode(int(kwargs.get("areaId")))
+		site_options = []
+		for site in site_list:
+			site_option = DataListOption(site.id, site.name)
+			site_options.append(self.renderer.render(site_option))
+
+		return "".join(site_options)
+
+
+	@cherrypy.expose
+	def getAreas(self, **kwargs):
+		self.siteTree.getNodesFromNode(kwargs.get("areaId"))
 
 
 	@cherrypy.expose

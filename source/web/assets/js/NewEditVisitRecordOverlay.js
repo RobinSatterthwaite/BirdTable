@@ -1,5 +1,5 @@
 
-class NewVisitDialog
+class NewEditVisitRecordOverlay
 {
 	constructor(element)
 	{
@@ -94,23 +94,31 @@ class NewVisitDialog
 	}
 
 
-	submit()
+	setVisitData(visit_data)
 	{
-		let visit = this.getVisitData();
+		this.element.dataset.visitId = visit_data.Id;
+		this.startDateTime.setDate(visit_data.StartTime.format("YYYY-MM-DD  HH:mm"));
+		this.endDateTime.setDate(visit_data.EndTime.format("YYYY-MM-DD  HH:mm"));
+		this.siteName.value = visit_data.Site;
+		this.siteName.dispatchEvent(new Event("input"));
+		this.visitNotes.value = visit_data.Notes;
 
-		let req_url =
-			window.location.protocol+"//"+window.location.host+"/newVisit";
-
-		let req = new XMLHttpRequest();
-		req.addEventListener("load", () =>
+		let sightings = this.element.getElementsByClassName("species-entry");
+		for (let sighting_inputs of sightings)
 		{
-			if (req.status === 201) this.close();
-		});
-		req.open("PUT", req_url);
-
-		req.setRequestHeader("Cache-Control", "no-cache");
-		req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		req.send(JSON.stringify(visit));
+			let species_id = sighting_inputs.dataset.speciesId;
+			if (visit_data.Sightings.hasOwnProperty(species_id))
+			{
+				let sighting_data = visit_data.Sightings[species_id];
+				sighting_inputs.getElementsByClassName("count")[0].value = sighting_data.Count;
+				sighting_inputs.getElementsByClassName("uncertainty")[0].value = sighting_data.Uncertainty;
+				sighting_inputs.getElementsByClassName("seen")[0].checked = sighting_data.Seen;
+				sighting_inputs.getElementsByClassName("heard")[0].checked = sighting_data.Heard;
+				sighting_inputs.getElementsByClassName("notes")[0].value = sighting_data.Notes;
+				sighting_inputs.getElementsByClassName("feral")[0].checked = sighting_data.Feral;
+				sighting_inputs.classList.remove("inactive");
+			}
+		}
 	}
 
 
@@ -155,6 +163,8 @@ class NewVisitDialog
 
 	clear()
 	{
+		delete this.element.dataset.visitId;
+		delete this.siteName.dataset.value;
 		this.startDateTime.clear();
 		this.endDateTime.clear();
 		this.visitNotes.value = null;
@@ -169,6 +179,38 @@ class NewVisitDialog
 		}
 
 		document.getElementById("NewVisitContainer").scrollTop = 0;
+	}
+
+
+	submit()
+	{
+		let visit = this.getVisitData();;
+		let req_url =	window.location.protocol+"//"+window.location.host
+		if (this.element.dataset.visitId === undefined)
+		{
+			req_url += "/newVisit";
+		}
+		else
+		{
+			let query = new URLSearchParams();
+			query.set("visitId", this.element.dataset.visitId);
+			req_url += "/editVisit?" + query.toString();
+		}
+
+		let req = new XMLHttpRequest();
+		req.addEventListener("load", () =>
+		{
+			if ((req.status === 201 && this.element.dataset.visitId === undefined) ||
+					req.status === 200)
+			{
+				this.close();
+			}
+		});
+		req.open("PUT", req_url);
+
+		req.setRequestHeader("Cache-Control", "no-cache");
+		req.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+		req.send(JSON.stringify(visit));
 	}
 
 

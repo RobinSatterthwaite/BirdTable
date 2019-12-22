@@ -3,6 +3,7 @@ let QueryParams = new URLSearchParams(window.location.search);
 
 let DateFromInput;
 let DateToInput;
+let AreaInput;
 let SiteInput;
 let IncludeFeralInput;
 
@@ -37,6 +38,7 @@ function main()
 {
 	DateFromInput = document.getElementById("DateFrom");
 	DateToInput = document.getElementById("DateTo");
+	AreaInput = document.getElementById("AreaName")
 	SiteInput = document.getElementById("SiteName");
 	IncludeFeralInput = document.getElementById("IncludeFeral");
 
@@ -64,6 +66,18 @@ function main()
 		DateTo.setDate(moment(initial_to_date).toDate());
 	}
 
+	let initial_area = QueryParams.get("areaId");
+	if (initial_area !== undefined && initial_area !== null)
+	{
+		AreaInput.dataset.value = initial_area;
+		let selected_option = document.querySelector("#AreaList option[value='"+initial_area+"']")
+		if (selected_option !== null)
+		{
+			let label = selected_option.label;
+			AreaInput.value = label;
+		}
+	}
+
 	let initial_site = QueryParams.get("siteId");
 	if (initial_site !== undefined && initial_site !== null)
 	{
@@ -80,6 +94,20 @@ function main()
 	{
 		IncludeFeralInput.checked = true;
 	}
+
+	AreaInput.addEventListener("input", (e) =>
+	{
+		let value = e.target.value;
+		e.target.dataset.value = value;
+		let selected_option = document.querySelector("#AreaList option[value='"+value+"']")
+		if (selected_option !== null)
+		{
+			let label = selected_option.label;
+			e.target.value = label;
+
+			updateAreaSelection(value);
+		}
+	});
 
 	SiteInput.addEventListener("input", (e) =>
 	{
@@ -121,11 +149,22 @@ function applyFilters()
 	if (SiteInput.dataset.value !== "" &&
 	    SiteInput.dataset.value !== undefined)
 	{
+		QueryParams.delete("areaId");
 		QueryParams.set("siteId", SiteInput.dataset.value);
 	}
 	else
 	{
 		QueryParams.delete("siteId");
+
+		if (AreaInput.dataset.value !== "" &&
+				AreaInput.dataset.value !== undefined)
+		{
+			QueryParams.set("areaId", AreaInput.dataset.value);
+		}
+		else
+		{
+			QueryParams.delete("areaId");
+		}
 	}
 
 	if (IncludeFeralInput.checked)
@@ -146,6 +185,8 @@ function clearFilters()
 {
 	DateFrom.clear();
 	DateTo.clear();
+	AreaInput.value = null
+	AreaInput.dataset.value = "";
 	SiteInput.value = null;
 	SiteInput.dataset.value = "";
 	IncludeFeralInput.checked = null;
@@ -192,6 +233,31 @@ function updateList()
 		}
 
 		species_list.classList.remove("busy");
+	});
+	req.open("GET", req_url);
+	req.setRequestHeader("Cache-Control", "no-cache");
+	req.send();
+}
+
+
+function updateAreaSelection(area_id)
+{
+	let req_url =
+		window.location.protocol+"//"+window.location.host+"/getSiteOptions";
+	let site_query = new URLSearchParams();
+	site_query.set("areaId", area_id);
+	let query_url = site_query.toString();
+	if (query_url.length > 0) req_url += "?" + query_url; 
+
+	let req = new XMLHttpRequest();
+	req.addEventListener("load", () =>
+	{
+		if (req.status === 200)
+		{
+			let site_list = document.getElementById("SiteList");
+			site_list.innerHTML = req.responseText;
+			SiteInput.focus();
+		}
 	});
 	req.open("GET", req_url);
 	req.setRequestHeader("Cache-Control", "no-cache");

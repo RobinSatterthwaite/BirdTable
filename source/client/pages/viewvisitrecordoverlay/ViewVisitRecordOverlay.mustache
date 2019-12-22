@@ -1,9 +1,9 @@
-<div id="ViewVisitRecords" class="overlay">
+<div id="ViewVisitRecord" class="overlay" tabindex="-1">
 	<div id="ViewVisitContainer" style="height: calc(100% - 41px); overflow-y: scroll">
 		<div style="display: block; padding: 16px 16px 16px 32px; border-bottom: 1px solid #888;">
-			<span style="display: block; font-size: 20pt">{{siteName}}</span>
+			<span id="VisitSiteName" data-id={{siteId}} style="display: block; font-size: 20pt">{{siteName}}</span>
 			<span id="VisitDateTime" data-start-time="{{startTime}}" data-end-time="{{endTime}}" style="display: block"></span>
-			<span style="display: block; margin-top: 6px">{{notes}}</span>
+			<span id="ViewVisitNotes" style="display: block; margin-top: 6px">{{notes}}</span>
 		</div>
 		{{{speciesEntries}}}
 	</div>

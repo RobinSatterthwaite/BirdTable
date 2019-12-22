@@ -14,6 +14,8 @@ let PreviousPageButton;
 let NextPageButton;
 let LastPageButton;
 
+let NewVisit;
+
 
 function main()
 {
@@ -28,11 +30,11 @@ function main()
 		NextPageButton = document.getElementById("NextPage");
 		LastPageButton = document.getElementById("LastPage");
 		
-		let new_visit_dialog = new NewVisitDialog(document.getElementById("NewVisitDialog"));
+		NewVisit = new NewEditVisitRecordOverlay(document.getElementById("NewEditVisitRecordOverlay"));
 	
 		document.getElementById("NewVisit").addEventListener("click", (e) =>
 		{
-			new_visit_dialog.show();
+			NewVisit.show();
 		});
 
 		// transition between fixed and moving table header row
@@ -267,7 +269,9 @@ function viewRecord(id)
 		if (req.status === 200)
 		{
 			document.body.insertAdjacentHTML("beforeend", req.responseText);
-			new ViewVisitRecordOverlay(document.getElementById("ViewVisitRecords"));
+			new ViewVisitRecordOverlay(
+				document.getElementById("ViewVisitRecord"), id,
+				NewVisit);
 		}
 
 		document.body.classList.remove("busy");

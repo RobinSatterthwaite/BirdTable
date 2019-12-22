@@ -2,9 +2,9 @@
 from pystache import TemplateSpec
 
 
-class NewVisitSpeciesEntry(TemplateSpec):
+class SpeciesEntry(TemplateSpec):
 
-	template_name = "NewVisitSpeciesEntry"
+	template_name = "SpeciesEntry"
 
 	def __init__(self, id, name):
 		self.id = id

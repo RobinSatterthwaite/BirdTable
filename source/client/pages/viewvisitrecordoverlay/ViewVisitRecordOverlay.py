@@ -13,6 +13,7 @@ class ViewVisitRecordOverlay(TemplateSpec):
 		self.renderer = renderer
 		self.species = species
 		self.siteName = visit['site_name']
+		self.siteId = visit['site_pk']
 		self.startTime = visit['start_time'].strftime("%Y-%m-%dT%H:%M:%SZ")
 		self.endTime = visit['end_time'].strftime("%Y-%m-%dT%H:%M:%SZ")
 		self.notes = visit['notes']

@@ -1,5 +1,6 @@
 
 from datetime import datetime, timezone, timedelta
+import pyodbc as odbc
 
 from db.Table import Table as DbTable
 from db.VisitEntry import VisitEntry
@@ -40,6 +41,61 @@ class VisitRecords(object):
 			sighting.feral = sighting_data["Feral"]
 			sighting.notes = sighting_data["Notes"]
 
+		sightings_ctx.commit()
+
+
+	def editVisit(self, visit_pk, visit_data):
+		visits_ctx = self.visits.newContext()
+		sightings_ctx = self.sightings.newContext()
+
+		start_time = datetime.strptime(visit_data["StartTime"], "%Y-%m-%dT%H:%M:%S.%f%z")
+		end_time = datetime.strptime(visit_data["EndTime"], "%Y-%m-%dT%H:%M:%S.%f%z")
+
+		visit_list = visits_ctx.where(
+			('pk =', visit_pk)
+			).fetchAll();
+		if len(visit_list) > 0:
+			visit = visit_list[0]
+			visit.site = visit_data["Site"]
+			visit.startTime = start_time.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+			visit.endTime = end_time.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+			visit.notes = visit_data["Notes"]
+			visits_ctx.commit()
+
+		sightings_list = sightings_ctx.where(
+			('visit_fk =', visit_pk)
+			).fetchAll();
+
+		old_sightings_set = set()
+		new_sightings_dict = {sighting["Species"]:sighting for sighting in visit_data["Sightings"]}
+
+		for sighting in sightings_list:
+			old_sightings_set.add(sighting.species)
+
+			if sighting.species not in new_sightings_dict:
+				sighting.delete()
+
+			else:
+				sighting_data = new_sightings_dict[sighting.species]
+				sighting.count = sighting_data["Count"]
+				sighting.uncertainty = sighting_data["Uncertainty"]
+				sighting.seen = sighting_data["Seen"]
+				sighting.heard = sighting_data["Heard"]
+				sighting.feral = sighting_data["Feral"]
+				sighting.notes = sighting_data["Notes"]
+
+		for sighting_data in visit_data["Sightings"]:
+			if sighting_data["Species"] not in old_sightings_set:
+				sighting = sightings_ctx.new()
+				sighting.visit = visit_pk
+				sighting.species = sighting_data["Species"]
+				sighting.count = sighting_data["Count"]
+				sighting.uncertainty = sighting_data["Uncertainty"]
+				sighting.seen = sighting_data["Seen"]
+				sighting.heard = sighting_data["Heard"]
+				sighting.feral = sighting_data["Feral"]
+				sighting.notes = sighting_data["Notes"]
+			
 		sightings_ctx.commit()
 
 

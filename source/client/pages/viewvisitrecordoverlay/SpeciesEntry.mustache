@@ -1,4 +1,4 @@
-<div class="species-entry" data-species-id={{speciesId}}>
+<div class="species-entry" data-species-id={{speciesId}} data-count={{count}} data-uncertainty={{uncertainty}} data-seen={{isSeen}} data-heard={{isHeard}} data-feral={{isFeral}}>
 	<div style="width: 24px; text-align: right">{{index}}.</div>
 	<div style="width: 180px; padding-left: 20px">{{speciesName}}</div>
 	<div style="width: 120px; text-align: left">
@@ -18,7 +18,7 @@
 	<div style="width: 80px; text-align: left">
 		<span>{{#isFeral}}Feral{{/isFeral}}</span>
 	</div>
-	<div style="min-width: 300px">
+	<div class="sighting-notes" style="min-width: 300px">
 		<span>{{notes}}</span>
 	</div>
 </div>

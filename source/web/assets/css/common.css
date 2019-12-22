@@ -55,3 +55,7 @@ button:active {
 	height: 100%;
 	background-color: white;
 }
+
+input[type=number]:not(.flatpickr-time input) {
+	text-align: right;
+}

@@ -218,6 +218,7 @@ BEGIN
 
 SELECT
     site.name AS site_name,
+    site.pk AS site_pk,
     visit.start_time,
     visit.end_time,
     visit.notes
